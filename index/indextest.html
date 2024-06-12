@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Decentralized Social Media</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .welcome-text {
+            font-family: Inter, var(--default-font-family);
+            font-size: 38px;
+        }
+        button {
+            width: 224px;
+            height: 54px;
+            background: linear-gradient(to right, #620098 50%, transparent 50%);
+            background-size: 200% 100%;
+            background-position: right bottom;   
+            border-radius: 32px;
+            font-size: 23px;
+            transition: background-position 0.5s ease;
+        }
+        button:hover {
+            background-position: left bottom;
+        }
+        body {
+            background-image: url(./testbg4.png);
+            margin: 0;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="body-div mt-5 pt-5">
+            <div class="welcome-text mt-4">
+                <span>Welcome to a new<br />era of social media.<br />Your style, Your
+                    story.</span>
+            </div>
+            <div class="button-div mt-5 pt-5">
+                <!-- Use JavaScript to redirect when the button is clicked -->
+                <button id="getStartedBtn" class="">Get started <span class="right-arrow-icon"><i class="fa-solid fa-arrow-right"></i></span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle redirection -->
+    <script>
+        // Add event listener to the button
+        document.getElementById('getStartedBtn').addEventListener('click', function() {
+            // Redirect to signup.html
+            window.location.href = '../singup/signup.html';
+        });
+    </script>
+</body>
+</html>

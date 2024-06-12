@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="index.html">
+            <i class="fas fa-infinity" style="font-size: 32px; color: #47a1f1;"></i>
+            Loop Connect
+        </a>  
+        <div class="container">
+            <input type="text" class="form-control search-input mt-2" placeholder="Discover what you are looking for...">
+            <div class="time-container">
+                <div class="time" id="time"></div>
+                <div class="date" id="date"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid main-container" style="padding-top: 56px;">
+        <div class="row">
+            <div class="col-md-3 left-section border-right border-dark" id="leftSection">
+                <div class="groups-1">
+                    <div class="home-div home-section ">
+                        <a href="../dashboard/dashboard.html" class="home-text">
+                            <i class="fas fa-home home-icon mr-2"></i>
+                            Home
+                        </a>
+                    </div>
+                    <div class="search-section">
+                        <a href="search.html" class="search-text">
+                            <i class="fas fa-search search-icon mr-2"></i>
+                            Search
+                        </a>
+                    </div>
+                    <div class="notification-section">
+                        <a href="notifications.html" class="notification-text">
+                            <i class="fas fa-bell notification-icon mr-2"></i>
+                            Notifications
+                        </a>
+                    </div>
+                    <div class="profile-section active">
+                        <a href="profile.html" class="profile-text">
+                            <i class="fas fa-user profile-icon mr-2"></i>
+                            Profile
+                        </a>
+                    </div>
+                    <div class="settings-section">
+                        <a href="settings.html" class="settings-text">
+                            <i class="fas fa-cog settings-icon mr-2"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+                <div class="button">
+                    <button class="btn background" data-toggle="modal" data-target="#postModal"><span class="post">Post</span></button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-5 px-3 mt-5">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle overflow-hidden mt-5" style="width: 40px; height: 40px;">
+                            <img src="" class="w-100 h-100" alt="Circular Picture" id="userpfp">
+                        </div>
+                        <span class="ml-3 mt-5" id="connected_username">Username</span>
+                    </div>
+                    <div class="dropdown mt-5">
+                        <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-up" aria-labelledby="dropdownMenuButton">
+                            <div class="dropdown-item">
+                               Your Wallet Address: <span class="text-dark" id="fullAddress"> </span>
+                            </div>
+                            <button class="dropdown-item" href="#" id="disconnectButton">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 right-section" id="rightSection">
+                <!-- Author Profile Section -->
+                <div class="author-posts-container">
+                    <div class="author-profile">
+                        <img src="" alt="Author Profile Picture" id="authorProfilePicture" class="img-fluid rounded-circle">
+                        <div class="author-info">
+                            <h2 id="authorUsername"></h2>
+                        </div>
+                    </div>
+                    <hr> <!-- Add a horizontal line -->
+                    <div id="postsContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="profile.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".background .post").click(function() {
+                $("#postModal").modal('show');
+            });
+        });
+
+        $("#disconnectButton").click(function() {
+            disconnectWallet();
+        });
+
+        async function disconnectWallet() {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    window.location.href = '../signin/signin.html';
+                } catch (error) {
+                    console.error("Error disconnecting MetaMask:", error);
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            let web3;
+            let accounts;
+            const contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154';
+            const contractRegistryABI = [
+                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
+                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
+                {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
+                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
+                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
+            ];
+
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                accounts = await web3.eth.requestAccounts();
+            } else {
+                console.error('MetaMask is not installed');
+            }
+
+            const walletAddress = accounts[0];
+            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            const username = await contractRegistry.methods.getUsername(walletAddress).call();
+
+            document.getElementById('fullAddress').innerText = walletAddress;
+            document.getElementById('connected_username').innerText = username;
+
+            const cid = await contractRegistry.methods.getCID(walletAddress).call();
+            const pinataUrl = `https://purple-wonderful-jay-289.mypinata.cloud/ipfs/${cid}`;
+            document.getElementById('userpfp').src = pinataUrl;
+        });
+
+        document.getElementById('postButton').addEventListener('click', function() {
+            const postContent = document.getElementById('postContent').value;
+            console.log('Post content:', postContent);
+            $('#postModal').modal('hide');
+        });
+    </script>
+</body>
+</html>

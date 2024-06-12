@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
+    <style>
+        body {
+            background-image: url(./Frame\ 1-Photoroom.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            flex-direction: column;
+        }
+        .loading-spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-message {
+            margin-top: 20px;
+            color: #333;
+            font-size: 1.2em;
+        }
+        .right-container {
+            margin-top: 120px;
+            padding-left: 120px;
+        }
+        input[type="text"],
+        button {
+            border-radius: 20px;
+            width: 350px;
+            height: 40px;
+        }
+        .image-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-left: 60px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .camera-icon {
+            color: #fff;
+            font-size: 40px;
+            position: absolute;
+        }
+        .selected-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        .file-input {
+            display: none;
+        }
+        #signUpButton,
+        #connectWalletButton {
+            display: none;
+        }
+        .active {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-message">Creating account...</div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <img src="./signupbg2.png" alt="signupimage" class="mt-4">
+            </div>
+            <div class="col-6 right-container">
+                <div class="row">
+                    <span class="signup-text text-white"> SignUp to Loop Connect</span>
+                </div>
+                <div class="row mt-3">
+                    <span class="tagline text-white"> 
+                        Join our growing network today! Sign up now<br> and become a part of our vibrant community
+                    </span>
+                </div>
+                <div class="row mt-4">
+                    <label for="fileInput" class="image-circle ">
+                        <input type="file" id="fileInput" class="file-input" accept="image/png, image/jpeg">
+                        <i class="fas fa-camera camera-icon"></i>
+                        <img src="" alt="selected-image" class="selected-image">
+                    </label>
+                </div>
+                <div class="row mt-5">
+                    <input type="text" id="usernameInput" placeholder="  Username">
+                </div>
+                <div class="row mt-4">
+                    <button id="connectWalletButton" class="active"><span class="button-text">Connect Wallet</span></button>
+                    <button id="signUpButton" class=""><span class="button-text">Sign Up</span></button>
+                </div>
+                <div class="row mt-4">
+                    <span class="text-white">Already have an account?<a href="../signin/signin.html"> Sign in</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.0/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let web3;
+        let accounts;
+        const contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154'; // Update with your deployed UserRegistry contract address
+        const contractRegistryABI = [
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
+            {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
+        ];
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    accounts = await web3.eth.requestAccounts();
+                    document.getElementById('fileInput').disabled = false;
+                    console.log("Connected to MetaMask successfully");
+                    document.getElementById('connectWalletButton').classList.remove('active');
+                    document.getElementById('signUpButton').classList.add('active');
+                } catch (error) {
+                    console.error('Error connecting to wallet:', error);
+                }
+            } else {
+                console.error('MetaMask is not installed');
+            }
+        }
+
+        document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+
+        const fileInput = document.getElementById('fileInput');
+        const imageCircle = document.querySelector('.image-circle');
+        const cameraIcon = document.querySelector('.camera-icon');
+        const selectedImage = document.querySelector('.selected-image');
+
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImage.src = e.target.result;
+                    cameraIcon.style.display = 'none';
+                    selectedImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                console.log("Displayed selected image in circle");
+            }
+        });
+
+        imageCircle.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        async function uploadImageToPinata(imageData) {
+            const formData = new FormData();
+            formData.append('file', imageData);
+            try {
+                console.log("Uploading to Pinata...");
+                const response = await axios.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {
+                    headers: {
+                        'pinata_api_key': '3db15efd4462cbddeeb2', // Replace with your Pinata API key
+                        'pinata_secret_api_key': '81cb93e99da565a57aca234048af75c4083a5e49274016e4bba47258abf0e3dc' // Replace with your Pinata API secret
+                    }
+                });
+
+                const data = response.data;
+                console.log("Uploaded to Pinata:", data.IpfsHash);
+                return data.IpfsHash;
+            } catch (error) {
+                console.error('Error uploading file to Pinata:', error);
+                throw error;
+            }
+        }
+
+        async function signUp() {
+            const usernameInput = document.getElementById('usernameInput').value.trim();
+            if (!usernameInput) {
+                alert('Please enter a username');
+                return;
+            }
+
+            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            const isAvailable = await contractRegistry.methods.usernameAvailability(usernameInput).call();
+            if (!isAvailable) {
+                alert('Username is not available');
+                return;
+            }
+
+            try {
+                showLoadingOverlay();
+
+                await registerUsername(usernameInput);
+
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+                const cid = await uploadImageToPinata(file);
+
+                await storeCIDInUserPFP(cid);
+
+                showSuccessMessage();
+
+                setTimeout(() => {
+                    hideLoadingOverlay();
+                    window.location.href = '../dashboard/dashboard.html';
+                }, 2000); // 2 seconds delay
+            } catch (error) {
+                console.error('Error signing up:', error);
+                alert('Error signing up. Please try again.');
+                hideLoadingOverlay();
+            }
+        }
+
+        async function registerUsername(username) {
+            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            await contractRegistry.methods.registerUsername(username).send({ from: accounts[0] });
+            console.log("Username registered successfully");
+        }
+
+        async function storeCIDInUserPFP(cid) {
+            const contractPFP = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            await contractPFP.methods.storeCID(cid).send({ from: accounts[0] });
+            console.log("CID stored in UserPFPStore successfully");
+        }
+
+        function showLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'flex';
+        }
+
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'none';
+        }
+
+        function showSuccessMessage() {
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            loadingSpinner.style.borderColor = '#4CAF50';
+            loadingSpinner.style.borderTopColor = '#4CAF50';
+            const loadingMessage = document.querySelector('.loading-message');
+            loadingMessage.textContent = 'Account created successfully';
+
+            const checkmarkIcon = document.createElement('i');
+            checkmarkIcon.classList.add('fas', 'fa-check-circle', 'fa-5x', 'text-success');
+            loadingSpinner.parentNode.replaceChild(checkmarkIcon, loadingSpinner);
+        }
+
+        document.getElementById('signUpButton').addEventListener('click', signUp);
+    </script>
+</body>
+</html>

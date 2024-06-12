@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signin</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
+    <style>
+        body{
+            background-image: url(./Frame\ 1-Photoroom.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            padding:0;
+        }
+        .right-container{
+            margin-top: 120px;
+            padding-left: 120px;
+        }
+        button {
+            border-radius: 20px;
+            width: 350px;
+            height: 40px;
+        }
+        
+        #logInButton, #connectWalletButton {
+            display: none;
+        }
+        .active {
+            display: block !important;
+        }
+        .user-not-found {
+            display: none;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <img src="./signupbg2.png" alt="signupimage" class="mt-4">
+            </div>
+            <div class="col-6 right-container">
+                <div class="row">
+                    <Span class="signup-text text-white"> Log in to Loop Connect</Span>
+                </div>
+                <div class="row mt-3">
+                    <span class="tagline text-white"> 
+                        Welcome back! Log in to your account and<br> explore the Loop Connect community.
+                    </span>
+                </div>
+              
+                <div class="row mt-4">
+                     <button id="connectWalletButton" class="active"><span class="button-text">Connect Wallet</span></button>
+                     <button id="logInButton" class=""><span class="button-text">Log In</span></button>
+                </div>
+                <div class="row mt-4">
+                    <span class="text-white">Don't have an account?<a href="../singup/signup.html"> Sign up</a></span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+<div class="user-not-found" id="userNotFound">User account not found. Please register.</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.0/web3.min.js"></script>
+    <script>
+        let web3;
+        let accounts;
+        let contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154'; // Update with your deployed UserRegistry contract address
+        let contractRegistryABI = [
+                                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
+                                    {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
+                                    {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
+                                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
+                                    {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+                                    {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+                                    {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+                                    {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+                                    {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
+                                    ];
+
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    accounts = await web3.eth.requestAccounts();
+                    console.log("connected metamask Successfully");
+                     // Metamask successfully connected
+                     document.getElementById('connectWalletButton').classList.remove('active');
+                    document.getElementById('logInButton').classList.add('active');
+                } catch (error) {
+                    console.error('Error connecting to wallet:', error);
+                }
+            } else {
+                console.error('MetaMask is not installed');
+            }
+        }
+
+        document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+
+        async function logIn() {
+            try {
+                const username = await getUsernameFromWallet();
+                const isUserSignedUp = await checkUserRegistration(username);
+                if (isUserSignedUp) {
+                    // Redirect to dashboard if user is registered
+                    window.location.href = '../dashboard/dashboard.html';
+                } else {
+                    // Display user not found message for 7 seconds
+                    document.getElementById('userNotFound').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('userNotFound').style.display = 'none';
+                    }, 7000);
+                }
+            } catch (error) {
+                console.error('Error logging in:', error);
+            }
+        }
+
+        document.getElementById('logInButton').addEventListener('click', logIn);
+
+        async function getUsernameFromWallet() {
+            const accounts = await web3.eth.getAccounts();
+            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            const username = await contractRegistry.methods.getUsername(accounts[0]).call();
+            console.log(username);
+            return username;
+        }
+
+        async function checkUserRegistration(username) {
+            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            const isUserSignedUp = await contractRegistry.methods.isUserAlreadySignedUp(accounts[0]).call();
+            console.log(isUserSignedUp);
+            return isUserSignedUp;
+        }
+    </script>
+</body>
+</html>

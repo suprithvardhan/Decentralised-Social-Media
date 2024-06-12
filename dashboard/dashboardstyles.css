@@ -1,0 +1,176 @@
+body {
+    background-color: rgba(23, 24, 26, 255);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #fff;
+}
+
+.navbar {
+    background-color: rgba(23, 24, 26, 255);
+}
+
+.navbar-brand {
+    color: #fff; /* Text color for the navbar brand */
+    font-size: 1.5rem;
+    margin-right: auto; /* Push the brand to the left */
+}
+
+.search-input {
+    width: 750px;
+    border-radius: 20px;
+    border: 1px solid #424447;
+    background-color: #2f3133;
+    margin-right: auto; /* Push the search input to the left */
+    margin-left: 100px;
+}
+
+.time-container {
+    color: #fff;
+    text-align: right;
+    margin-left: auto; /* Push the time container to the right */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.time {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.date {
+    font-size: 14px;
+}
+
+.main-container {
+    overflow: hidden;
+    margin: 0;
+    padding-top: 15px; /* Adjusted to maintain spacing from top */
+}
+
+.left-section {
+    background-color: #1a1b1d; /* Background color for the left section */
+    min-height: 620px; /* Adjust height as needed */
+     
+   
+}
+
+.right-section {
+    background-color:  #1a1b1d; /* Background color for the right section */
+    min-height: 620px; /* Adjust height as needed */
+}
+
+.home-div,
+.search-section,
+.notification-section,
+.profile-section,
+.settings-section {
+    height: 70px;
+    line-height: 100px;
+    padding-left: 80px;
+}
+
+.home-text,
+.search-text,
+.notification-text,
+.profile-text,
+.settings-text {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    color: #cccdcf;
+}
+
+.home-text:hover,
+.search-text:hover,
+.notification-text:hover,
+.profile-text:hover,
+.settings-text:hover {
+    text-decoration: none;
+    color: #cccdcf;
+}
+
+.button {
+    margin-top: 20px; /* Adjusted margin */
+    padding-left: 40px;
+}
+
+.background {
+    width: 180px;
+    height: 50px;
+    background-color: #630099;
+    border: 1px solid #511078;
+    border-radius: 25px; /* Adjusted border radius */
+}
+
+.post {
+    color: #fff;
+    font-size: 18px;
+}
+
+.home-div:hover,
+.search-section:hover,
+.notification-section:hover,
+.profile-section:hover,
+.settings-section:hover {
+    background: linear-gradient(to right, rgba(66, 66, 69, 1) 0%, rgba(66, 66, 69, 0.5) 50%, rgba(66, 66, 69, 0) 100%);
+    border-radius: 5px;
+    cursor: pointer;
+}
+.active{
+    background: linear-gradient(to right, rgba(66, 66, 69, 1) 0%, rgba(66, 66, 69, 0.5) 50%, rgba(66, 66, 69, 0) 100%);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.home-div:hover .home-text,
+.search-section:hover .search-text,
+.notification-section:hover .notification-text,
+.profile-section:hover .profile-text,
+.settings-section:hover .settings-text {
+    color: #cccdcf;
+}
+
+.home-icon {
+    color: #5486b7;
+}
+
+.search-icon {
+    color: #57b27c;
+}
+
+.notification-icon {
+    color: #bab058;
+}
+
+.profile-icon {
+    color: #b35134;
+}
+
+.settings-icon {
+    color: #715ea1;
+}
+hr {
+   border-top: 1px solid rgba(255, 255, 255, 0.3); /* Change color and opacity as needed */
+}
+.bottom-section {
+    margin-top: 200px;
+}
+#connected_username {
+    font-size: 23px; /* Increase font size to 24px */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Change font family to Segoe UI or any preferred font */
+    color: #C5C6C8;
+}
+
+.overlay {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #630099;
+    color: white;
+    border-radius: 5px;
+    z-index: 9999;
+}
