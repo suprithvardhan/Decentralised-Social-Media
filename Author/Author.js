@@ -1,3 +1,4 @@
+//Author.js
 async function fetchAndDisplayAuthorPosts(authorAddress) {
     const contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154';
     const postContractAddress = '0x79FFFEFB1c5D585703EA33aD0B7c981b69fc56f7';

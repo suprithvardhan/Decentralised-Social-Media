@@ -86,7 +86,12 @@
                 </div>
             </div>
             <div class="col-md-9 right-section" id="rightSection">
-                <div class="post-content" id="postContent"></div>
+                <div class="post-content" id="postContent">
+                    <div class="shared-post-container">
+                        <h2>Shared Post</h2>
+                        <div id="postContent"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -95,6 +100,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../config.js"></script>
     <script src="sharedpost.js"></script>
     <script>
         $(document).ready(function() {
@@ -121,18 +127,6 @@
         document.addEventListener("DOMContentLoaded", async function() {
             let web3;
             let accounts;
-            const contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154';
-            const contractRegistryABI = [
-                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
-                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
-                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-            ];
 
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -142,7 +136,9 @@
             }
 
             const walletAddress = accounts[0];
-            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            const contractRegistry = new web3.eth.Contract(
+            appConfig.contracts.userRegistry.abi,
+            appConfig.contracts.userRegistry.address);
             const username = await contractRegistry.methods.getUsername(walletAddress).call();
 
             document.getElementById('fullAddress').innerText = walletAddress;

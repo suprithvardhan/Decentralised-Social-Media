@@ -1,166 +1,252 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const postContainer = document.getElementById('rightSection');
-        let web3Provider;
+    let web3Provider;
+    const postContainer = document.getElementById('postsContainer');
+    const loadingPosts = document.getElementById('loadingPosts');
+    let isLoading = false;
+    let currentPage = 1;
+    const postsPerPage = 10;
 
-        async function fetchAndDisplayPosts() {
+    // Show initial loading screen
+    const initialLoading = document.getElementById('initial-loading');
+    const mainContent = document.getElementById('main-content');
+
+    setTimeout(() => {
+        initialLoading.style.display = 'none';
+        mainContent.style.display = 'block';
+        initialize();
+    }, 2000);
+
+    async function initializeWeb3() {
+        if (window.ethereum) {
             web3Provider = new Web3(window.ethereum);
-
-            const postContractAddress = '0x79FFFEFB1c5D585703EA33aD0B7c981b69fc56f7'; // Replace with your new contract address
-            const postContractAbi =[
-                {"inputs":[{"internalType":"string","name":"_content","type":"string"}],"name":"createPost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"dislikePost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"likePost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"author","type":"address"},{"indexed":false,"internalType":"string","name":"content","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"PostCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"disliker","type":"address"},{"indexed":false,"internalType":"uint256","name":"likesCount","type":"uint256"}],"name":"PostDisliked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"liker","type":"address"},{"indexed":false,"internalType":"uint256","name":"likesCount","type":"uint256"}],"name":"PostLiked","type":"event"},{"inputs":[],"name":"getAllPosts","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"getPost","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostCountByUser","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostIdsByUser","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostsByAddress","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"},{"internalType":"address","name":"_userAddress","type":"address"}],"name":"hasLikedPost","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"postExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"posts","outputs":[{"internalType":"address","name":"author","type":"address"},{"internalType":"string","name":"content","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint256","name":"likesCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPosts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"userPosts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-            ];
-            const postContract = new web3Provider.eth.Contract(postContractAbi, postContractAddress);
-            const totalPostCount = await postContract.methods.totalPosts().call();
-
-            for (let i = 0; i < totalPostCount; i++) {
-                const post = await postContract.methods.posts(i).call();
-                const profilePictureUrl = await getProfilePictureUrl(post.author);
-                const likeCount = await postContract.methods.posts(i).call(); // Get like count for the post
-                post.postId = i;
-                post.profilePictureUrl = profilePictureUrl;
-                post.likeCount = likeCount.likesCount; // Add like count to post object
-                displayPost(post);
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+            } catch (error) {
+                console.error("User denied account access");
             }
+        } else {
+            console.error('No web3 provider detected');
+        }
+    }
+
+    async function getProfilePictureUrl(authorAddress) {
+        const pfpContract = new web3Provider.eth.Contract(
+            appConfig.contracts.userRegistry.abi,
+            appConfig.contracts.userRegistry.address
+        );
+        const cid = await pfpContract.methods.getCID(authorAddress).call();
+        return `https://purple-wonderful-jay-289.mypinata.cloud/ipfs/${cid}`;
+    }
+
+    function generatePostHTML(post) {
+        return `
+            <div class="post" data-post-id="${post.postId}">
+                <div class="post-header">
+                    <img src="${post.profilePictureUrl}" class="rounded-circle mr-2" style="width: 40px; height: 40px;" alt="Profile Picture">
+                    <a href="../Author/Author.html?address=${post.author}" class="author-name text-decoration-none text-white">${post.author}</a>
+                    <span class="timestamp ml-auto">${new Date(post.timestamp * 1000).toLocaleString()}</span>
+                </div>
+                <div class="post-content">${post.content}</div>
+                <div class="post-actions">
+                    <button class="btn btn-action like-button ${post.isLiked ? 'liked' : ''}" data-post-id="${post.postId}">
+                        <i class="fas fa-heart"></i> <span class="like-count">${post.likeCount}</span>
+                    </button>
+                    <button class="btn btn-action share-button" data-post-id="${post.postId}">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function createPostSkeleton() {
+        return `
+            <div class="post skeleton">
+                <div class="post-header">
+                    <div class="skeleton-circle"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="post-content">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="post-actions">
+                    <div class="skeleton-button"></div>
+                    <div class="skeleton-button"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    async function fetchAndDisplayPosts(page = 1) {
+        if (isLoading) return;
+        isLoading = true;
+
+        if (page === 1) {
+            postContainer.innerHTML = '';
+            for (let i = 0; i < postsPerPage; i++) {
+                postContainer.innerHTML += createPostSkeleton();
+            }
+        } else {
+            loadingPosts.style.display = 'block';
         }
 
-        async function getProfilePictureUrl(authorAddress) {
-            const pfpContractAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154'; // Replace with your actual pfp contract address
-            const pfpContractAbi = [
-                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},{"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},{"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-            ];
+        const postContract = new web3Provider.eth.Contract(
+            appConfig.contracts.post.abi,
+            appConfig.contracts.post.address
+        );
+        const totalPostCount = await postContract.methods.totalPosts().call();
+        const userAccount = (await web3Provider.eth.getAccounts())[0];
 
-            const pfpContract = new web3Provider.eth.Contract(pfpContractAbi, pfpContractAddress);
-            const cid = await pfpContract.methods.getCID(authorAddress).call();
-            const profilePictureUrl = `https://purple-wonderful-jay-289.mypinata.cloud/ipfs/${cid}`;
-            return profilePictureUrl;
+        const startIndex = Math.max(totalPostCount - 1 - (page - 1) * postsPerPage, 0);
+        const endIndex = Math.max(startIndex - postsPerPage + 1, 0);
+
+        const posts = [];
+        for (let i = startIndex; i >= endIndex; i--) {
+            const post = await postContract.methods.getPost(i).call();
+            const profilePictureUrl = await getProfilePictureUrl(post[0]);
+            const isLiked = await postContract.methods.hasLikedPost(i, userAccount).call();
+            posts.push({
+                postId: i,
+                author: post[0],
+                content: post[1],
+                timestamp: parseInt(post[2]),
+                likeCount: parseInt(post[3]),
+                profilePictureUrl: profilePictureUrl,
+                isLiked: isLiked
+            });
         }
 
-        function generatePostHTML(post) {
-            return `
-                <section class="container mt-2 pt-5 mx-5">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="details d-flex align-items-center">
-                                <div class="profile-picture-icon">
-                                    <img src="${post.profilePictureUrl}" class="rounded-circle" style="width: 40px; height: 40px;" alt="Profile Picture">
-                                </div>
-                                <a href="../Author/Author.html?address=${post.author}" class="author-name ml-3 text-decoration-none text-white">${post.author}</a>
-                                <span class="timestamp ml-auto">${new Date(post.timestamp * 1000).toLocaleString()}</span>
-                            </div>
-                            <div class="post-content mt-1 ml-3 pt-4">${post.content}</div>
-                            <div class="interactive-icons d-flex ml-3 mt-2 pt-4">
-                                <div class="like-icon btn btn-secondary" data-post-id="${post.postId}" data-liked="false">
-                                    <i class="fas fa-heart"></i>
-                                    <span class="like-count">${post.likeCount}</span>
-                                </div>
-                                <div class="share-icon btn btn-secondary ml-3"  data-post-id="${post.postId}">
-                                    <i class="fas fa-share"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="bg-secondary mx-2">
-                </section>`;
+        if (page === 1) {
+            postContainer.innerHTML = '';
         }
-        ``
-        
 
-        function displayPost(post) {
+        posts.forEach(post => {
             const postHTML = generatePostHTML(post);
-            postContainer.innerHTML = postHTML + postContainer.innerHTML;
-            addLikeEventListeners();
-            addshareEventListeners();
+            postContainer.innerHTML += postHTML;
+        });
+
+        addEventListeners();
+        isLoading = false;
+        loadingPosts.style.display = 'none';
+
+        if (endIndex === 0) {
+            window.removeEventListener('scroll', handleInfiniteScroll);
         }
+    }
 
-        async function createPost(content) {
-            const postContractAddress = '0x79FFFEFB1c5D585703EA33aD0B7c981b69fc56f7'; // Replace with your new contract address
-            const postContractAbi =[
-                {"inputs":[{"internalType":"string","name":"_content","type":"string"}],"name":"createPost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"dislikePost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"likePost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"author","type":"address"},{"indexed":false,"internalType":"string","name":"content","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"PostCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"disliker","type":"address"},{"indexed":false,"internalType":"uint256","name":"likesCount","type":"uint256"}],"name":"PostDisliked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"liker","type":"address"},{"indexed":false,"internalType":"uint256","name":"likesCount","type":"uint256"}],"name":"PostLiked","type":"event"},{"inputs":[],"name":"getAllPosts","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"getPost","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostCountByUser","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostIdsByUser","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostsByAddress","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"},{"internalType":"address","name":"_userAddress","type":"address"}],"name":"hasLikedPost","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"postExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"posts","outputs":[{"internalType":"address","name":"author","type":"address"},{"internalType":"string","name":"content","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint256","name":"likesCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPosts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"userPosts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-            ];
-            const postContract = new web3Provider.eth.Contract(postContractAbi, postContractAddress);
-            const accounts = await web3Provider.eth.requestAccounts();
-            const userAccount = accounts[0];
+    function addEventListeners() {
+        const likeButtons = document.querySelectorAll('.like-button');
+        const shareButtons = document.querySelectorAll('.share-button');
 
-            await postContract.methods.createPost(content).send({ from: userAccount });
+        likeButtons.forEach(button => {
+            button.addEventListener('click', handleLikeClick);
+        });
 
-            const profilePictureUrl = await getProfilePictureUrl(userAccount);
-            const post = {
-                author: userAccount,
-                content,
-                timestamp: Math.floor(Date.now() / 1000),
-                profilePictureUrl
-                
-            };
+        shareButtons.forEach(button => {
+            button.addEventListener('click', handleShareClick);
+        });
+    }
 
-            displayPost(post);
-        }
+    async function handleLikeClick(event) {
+        const postId = event.currentTarget.getAttribute('data-post-id');
+        const likeCount = event.currentTarget.querySelector('.like-count');
+        const isLiked = event.currentTarget.classList.contains('liked');
 
-        async function toggleLike(postId, likeElement) {
-            const postContractAddress = '0x79FFFEFB1c5D585703EA33aD0B7c981b69fc56f7'; // Replace with your new contract address
-            const postContractAbi =[
-                {"inputs":[{"internalType":"string","name":"_content","type":"string"}],"name":"createPost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"dislikePost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"likePost","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"author","type":"address"},{"indexed":false,"internalType":"string","name":"content","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"PostCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"disliker","type":"address"},{"indexed":false,"internalType":"uint256","name":"likesCount","type":"uint256"}],"name":"PostDisliked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"postId","type":"uint256"},{"indexed":true,"internalType":"address","name":"liker","type":"address"},{"indexed":false,"internalType":"uint256","name":"likesCount","type":"uint256"}],"name":"PostLiked","type":"event"},{"inputs":[],"name":"getAllPosts","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"}],"name":"getPost","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostCountByUser","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostIdsByUser","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getPostsByAddress","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"string[]","name":"","type":"string[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_postId","type":"uint256"},{"internalType":"address","name":"_userAddress","type":"address"}],"name":"hasLikedPost","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"postExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"posts","outputs":[{"internalType":"address","name":"author","type":"address"},{"internalType":"string","name":"content","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint256","name":"likesCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPosts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"userPosts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-            ];
-            const postContract = new web3Provider.eth.Contract(postContractAbi, postContractAddress);
-            const accounts = await web3Provider.eth.requestAccounts();
-            const userAccount = accounts[0];
-            const liked = likeElement.getAttribute('data-liked') === 'true';
+        const postContract = new web3Provider.eth.Contract(
+            appConfig.contracts.post.abi,
+            appConfig.contracts.post.address
+        );
+        const userAccount = (await web3Provider.eth.getAccounts())[0];
 
-            if (liked) {
+        try {
+            if (isLiked) {
                 await postContract.methods.dislikePost(postId).send({ from: userAccount });
-                likeElement.setAttribute('data-liked', 'false');
-                likeElement.querySelector('i').classList.remove('text-danger');
+                event.currentTarget.classList.remove('liked');
             } else {
                 await postContract.methods.likePost(postId).send({ from: userAccount });
-                likeElement.setAttribute('data-liked', 'true');
-                likeElement.querySelector('i').classList.add('text-danger');
+                event.currentTarget.classList.add('liked');
             }
-        }
 
-        
-        function addLikeEventListeners() {
-            const likeButtons = document.querySelectorAll('.like-icon');
-            likeButtons.forEach(likeButton => {
-                const postId = likeButton.getAttribute('data-post-id');
-                likeButton.addEventListener('click', async () => {
-                    await toggleLike(postId, likeButton);
-                    });
-            });
+            const updatedPost = await postContract.methods.getPost(postId).call();
+            likeCount.textContent = updatedPost[3];
+        } catch (error) {
+            console.error('Error toggling like:', error);
         }
+    }
 
-        async function sharePost(postId, shareElement) {
-            const postLink = `http://127.0.0.1:5500/test_working_project/sharepost/display_shared_post.html?postid=${postId}`; // Example link format
-            try {
-                await navigator.clipboard.writeText(postLink);
-                console.log('Link copied to clipboard:', postLink);
-                
-                // Create floating overlay div
-                const overlayDiv = document.createElement('div');
-                overlayDiv.classList.add('overlay');
-                overlayDiv.textContent = 'Copied to clipboard';
-                document.body.appendChild(overlayDiv);
+    async function handleShareClick(event) {
+        const postId = event.currentTarget.getAttribute('data-post-id');
+        const postLink = `${window.location.origin}/sharepost/display_shared_post.html?postid=${postId}`;
         
-                // Remove the overlay after a short delay (e.g., 3 seconds)
-                setTimeout(() => {
-                    document.body.removeChild(overlayDiv);
-                }, 3000);
-            } catch (error) {
-                console.error('Failed to copy link to clipboard:', error);
-            }
+        try {
+            await navigator.clipboard.writeText(postLink);
+            const copiedMessage = document.getElementById('copiedMessage');
+            copiedMessage.style.display = 'block';
+            setTimeout(() => {
+                copiedMessage.style.display = 'none';
+            }, 3000);
+        } catch (error) {
+            console.error('Failed to copy link to clipboard:', error);
+            alert('Failed to copy link. Please try again.');
         }
-        
-        function addshareEventListeners() {
-            const shareButtons = document.querySelectorAll('.share-icon');
-            shareButtons.forEach(shareButton => {
-                const postId = shareButton.getAttribute('data-post-id');
-                shareButton.addEventListener('click', async () => {
-                    await sharePost(postId, shareButton);
-                });
-            });
-        }
+    }
 
-        fetchAndDisplayPosts();
-        
+    async function createPost(content) {
+        const postContract = new web3Provider.eth.Contract(
+            appConfig.contracts.post.abi,
+            appConfig.contracts.post.address
+        );
+        const userAccount = (await web3Provider.eth.getAccounts())[0];
+
+        try {
+            showPostNotification('Creating post...');
+            const transaction = await postContract.methods.createPost(content).send({ from: userAccount });
+            const postId = transaction.events.PostCreated.returnValues.postId;
+            const profilePictureUrl = await getProfilePictureUrl(userAccount);
+            const post = {
+                postId: postId,
+                author: userAccount,
+                content: content,
+                timestamp: Math.floor(Date.now() / 1000),
+                profilePictureUrl: profilePictureUrl,
+                likeCount: 0,
+                isLiked: false
+            };
+            const postHTML = generatePostHTML(post);
+            postContainer.insertAdjacentHTML('afterbegin', postHTML);
+            addEventListeners();
+            showPostNotification('Post created successfully!', 'success');
+        } catch (error) {
+            console.error('Error creating post:', error);
+            showPostNotification('Failed to create post. Please try again.', 'error');
+        }
+    }
+
+    function showPostNotification(message, type = 'info') {
+        const notification = document.getElementById('postNotification');
+        const notificationText = document.getElementById('postNotificationText');
+        notificationText.textContent = message;
+        notification.className = `post-notification ${type}`;
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+
+    function handleInfiniteScroll() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500 && !isLoading) {
+            currentPage++;
+            fetchAndDisplayPosts(currentPage);
+        }
+    }
+
+    async function initialize() {
+        await initializeWeb3();
+        await fetchAndDisplayPosts();
+
+        window.addEventListener('scroll', handleInfiniteScroll);
 
         const postButton = document.getElementById('postButton');
         const postContent = document.getElementById('postContent');
@@ -168,15 +254,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (postButton && postContent) {
             postButton.addEventListener('click', async () => {
                 const content = postContent.value;
-                await createPost(content);
-                $('#postModal').modal('hide');
-                postContent.value = '';
+                if (content.trim()) {
+                    await createPost(content);
+                    $('#postModal').modal('hide');
+                    postContent.value = '';
+                }
             });
-        } else {
-            console.error('postButton or postContent element not found.');
         }
-    } catch (error) {
-        console.error('Error:', error);
+
+        const profileButton = document.getElementById('profileButton');
+        const mobileProfileButton = document.getElementById('mobileProfileButton');
+
+        [profileButton, mobileProfileButton].forEach(button => {
+            if (button) {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const accounts = await web3Provider.eth.getAccounts();
+                    const currentAddress = accounts[0];
+                    window.location.href = `../Profile/profile.html?address=${currentAddress}`;
+                });
+            }
+        });
+
+        const disconnectButton = document.getElementById('disconnectButton');
+        if (disconnectButton) {
+            disconnectButton.addEventListener('click', async () => {
+                if (window.ethereum) {
+                    try {
+                        await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        window.location.href = '../signin/signin.html';
+                    } catch (error) {
+                        console.error("Error disconnecting MetaMask:", error);
+                    }
+                }
+            });
+        }
+
+        // Update user info
+        const userContract = new web3Provider.eth.Contract(
+            appConfig.contracts.userRegistry.abi,
+            appConfig.contracts.userRegistry.address
+        );
+        const userAccount = (await web3Provider.eth.getAccounts())[0];
+        const username = await userContract.methods.getUsername(userAccount).call();
+        const profilePicCID = await userContract.methods.getCID(userAccount).call();
+
+        document.getElementById('connected_username').textContent = username;
+        document.getElementById('fullAddress').textContent = userAccount;
+        if (profilePicCID) {
+            document.getElementById('userpfp').src = `https://purple-wonderful-jay-289.mypinata.cloud/ipfs/${profilePicCID}`;
+        }
     }
 });
-

@@ -1,0 +1,402 @@
+body {
+    background-color: rgba(23, 24, 26, 255);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #fff;
+}
+
+.navbar {
+    background-color: rgba(23, 24, 26, 255);
+    padding: 10px 0;
+}
+
+
+.navbar-brand {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-right: 20px;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+    border-radius: 20px;
+    border: 1px solid #424447;
+    background-color: #2f3133;
+    padding: 0 15px;
+    color: #fff;
+}
+
+.main-container {
+    overflow: hidden;
+    margin: 0;
+    padding-top: 15px;
+}
+
+.left-section {
+    background-color: #1a1b1d;
+    min-height: 620px;
+}
+
+.right-section {
+    background-color: #1a1b1d;
+    min-height: 620px;
+}
+
+.home-div,
+.search-section,
+.liked-posts-section,
+.profile-section,
+.settings-section {
+    height: 70px;
+    line-height: 100px;
+    padding-left: 80px;
+}
+
+.home-text,
+.search-text,
+.liked-posts-text,
+.profile-text,
+.settings-text {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    color: #cccdcf;
+}
+
+.home-text:hover,
+.search-text:hover,
+.liked-posts-text:hover,
+.profile-text:hover,
+.settings-text:hover {
+    text-decoration: none;
+    color: #cccdcf;
+}
+
+.button {
+    margin-top: 20px;
+    padding-left: 40px;
+}
+
+.background {
+    width: 180px;
+    height: 50px;
+    background-color: #630099;
+    border: 1px solid #511078;
+    border-radius: 25px;
+}
+
+.post {
+    color: #fff;
+    font-size: 18px;
+}
+
+.home-div:hover,
+.search-section:hover,
+.liked-posts-section:hover,
+.profile-section:hover,
+.settings-section:hover {
+    background: linear-gradient(to right, rgba(66, 66, 69, 1) 0%, rgba(66, 66, 69, 0.5) 50%, rgba(66, 66, 69, 0) 100%);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.active {
+    background: linear-gradient(to right, rgba(66, 66, 69, 1) 0%, rgba(66, 66, 69, 0.5) 50%, rgba(66, 66, 69, 0) 100%);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.home-icon {
+    color: #5486b7;
+}
+
+.search-icon {
+    color: #57b27c;
+}
+
+.liked-posts-icon {
+    color: #e74c3c;
+}
+
+.profile-icon {
+    color: #b35134;
+}
+
+.settings-icon {
+    color: #715ea1;
+}
+
+hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.share-icon.sharing {
+    background-color: #630099;
+    transition: background-color 0.3s ease;
+}
+
+.bottom-section {
+    margin-top: 200px;
+}
+
+#connected_username {
+    font-size: 23px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #C5C6C8;
+}
+
+.copied-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #630099;
+    color: white;
+    border-radius: 5px;
+    display: none;
+    z-index: 9999;
+}
+
+.overlay {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #630099;
+    color: white;
+    border-radius: 5px;
+    z-index: 9999;
+}
+
+.search-container {
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    right: 15px;
+    width: 90%;
+    max-width: 600px;
+    background-color: #2f3133;
+    border: 1px solid #424447;
+    border-radius: 0 0 4px 4px;
+    z-index: 999;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 15px;
+    border-bottom: 1px solid #424447;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #3a3b3d;
+}
+
+.search-result-item .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #fff;
+}
+
+.search-result-item .user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-result-item .username {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 3px;
+}
+
+.search-result-item .user-address {
+    font-size: 12px;
+    color: #a0a0a0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #1a1b1d;
+    padding: 10px;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+}
+
+.mobile-nav .nav-item {
+    color: #cccdcf;
+    font-size: 24px;
+}
+
+.floating-post-button {
+    display: none;
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #630099;
+    color: #fff;
+    font-size: 24px;
+    z-index: 1001;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .left-section {
+        display: none;
+    }
+
+    .right-section {
+        width: 100%;
+    }
+
+    .mobile-nav {
+        display: flex;
+    }
+
+    .floating-post-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main-container {
+        padding-bottom: 80px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .search-container {
+        max-width: 90%;
+        margin: 10px auto;
+    }
+
+    .search-input {
+        font-size: 14px;
+    }
+
+    .search-results {
+        left: 0;
+        right: 0;
+    }
+}
+
+
+/* ... (existing styles remain unchanged) ... */
+
+/* Styles for settings page */
+.form-group label {
+    color: #cccdcf;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    background-color: #2f3133;
+    border: 1px solid #424447;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    background-color: #3a3b3d;
+    border-color: #630099;
+    color: #fff;
+    box-shadow: none;
+}
+
+.form-control-file {
+    color: #cccdcf;
+}
+
+.btn-primary {
+    background-color: #630099;
+    border-color: #511078;
+    padding: 0.5rem 1.5rem;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #511078;
+    border-color: #3f0d5c;
+}
+
+#settingsForm {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.settings-header {
+    color: #fff;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.profile-picture-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.settings-section h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Add these media queries at the end of your CSS file */
+@media (max-width: 768px) {
+    #settingsForm {
+        padding: 0 15px;
+    }
+
+    .settings-header {
+        font-size: 1.5rem;
+    }
+}

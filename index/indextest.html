@@ -3,53 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Decentralized Social Media</title>
+    <title>Welcome to Loop Connect</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
     <style>
+        body {
+            background: linear-gradient(135deg, #9900FF, #000066);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1200px;
+            padding: 0;
+        }
+        .row {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .left-container {
+            padding: 40px;
+        }
+        .right-container {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .welcome-image {
+            width: 100%;
+            height: auto;
+        }
         .welcome-text {
-            font-family: Inter, var(--default-font-family);
+            color: #ffffff;
+            font-weight: 600;
             font-size: 38px;
+            margin-bottom: 30px;
         }
         button {
+            border-radius: 32px;
             width: 224px;
             height: 54px;
+            border: none;
+            font-size: 23px;
             background: linear-gradient(to right, #620098 50%, transparent 50%);
             background-size: 200% 100%;
-            background-position: right bottom;   
-            border-radius: 32px;
-            font-size: 23px;
+            background-position: right bottom;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
             transition: background-position 0.5s ease;
         }
         button:hover {
             background-position: left bottom;
         }
-        body {
-            background-image: url(./testbg4.png);
-            margin: 0;
-            background-repeat: no-repeat;
+        @media (max-width: 767px) {
+            body {
+                background: linear-gradient(135deg, #9900FF, #000066);
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url('./testbg4.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                filter: blur(5px);
+                opacity: 0.7;
+                z-index: -1;
+            }
+            .container {
+                padding: 20px;
+            }
+            .row {
+                background-color: rgba(255, 255, 255, 0.1);
+                margin: 0;
+                border-radius: 20px;
+            }
+            .left-container {
+                display: none;
+            }
+            .right-container {
+                padding: 30px;
+            }
+            .welcome-text {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="body-div mt-5 pt-5">
-            <div class="welcome-text mt-4">
-                <span>Welcome to a new<br />era of social media.<br />Your style, Your
-                    story.</span>
+        <div class="row">
+            <div class="col-md-6 left-container">
+                <img src="./testbg4.png" alt="welcomeimage" class="welcome-image">
             </div>
-            <div class="button-div mt-5 pt-5">
-                <!-- Use JavaScript to redirect when the button is clicked -->
-                <button id="getStartedBtn" class="">Get started <span class="right-arrow-icon"><i class="fa-solid fa-arrow-right"></i></span></button>
+            <div class="col-md-6 right-container">
+                <div class="welcome-text">
+                    Welcome to a new<br>era of social media.<br>Your style, Your story.
+                </div>
+                <button id="getStartedBtn">
+                    Get started <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript to handle redirection -->
     <script>
-        // Add event listener to the button
         document.getElementById('getStartedBtn').addEventListener('click', function() {
-            // Redirect to signup.html
             window.location.href = '../singup/signup.html';
         });
     </script>

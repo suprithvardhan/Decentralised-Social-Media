@@ -3,171 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Loop Connect - Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.5.3.min.js"></script>
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top">
-        <a class="navbar-brand" href="index.html">
-            <i class="fas fa-infinity" style="font-size: 32px; color: #47a1f1;"></i>
-            Loop Connect
-        </a>  
         <div class="container">
-            <input type="text" class="form-control search-input mt-2" placeholder="Discover what you are looking for...">
-            <div class="time-container">
-                <div class="time" id="time"></div>
-                <div class="date" id="date"></div>
+            <a class="navbar-brand" href="../dashboard/dashboard.html">
+                <i class="fas fa-infinity" style="font-size: 32px;"></i>
+                Loop Connect
+            </a>
+            <div class="search-container ml-auto">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Discover what you are looking for...">
+                <div id="searchResults" class="search-results"></div>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid main-container" style="padding-top: 56px;">
+    <div class="container-fluid main-container">
         <div class="row">
-            <div class="col-md-3 left-section border-right border-dark" id="leftSection">
-                <div class="groups-1">
-                    <div class="home-div home-section ">
-                        <a href="../dashboard/dashboard.html" class="home-text">
-                            <i class="fas fa-home home-icon mr-2"></i>
-                            Home
-                        </a>
-                    </div>
-                    <div class="search-section">
-                        <a href="search.html" class="search-text">
-                            <i class="fas fa-search search-icon mr-2"></i>
-                            Search
-                        </a>
-                    </div>
-                    <div class="notification-section">
-                        <a href="notifications.html" class="notification-text">
-                            <i class="fas fa-bell notification-icon mr-2"></i>
-                            Notifications
-                        </a>
-                    </div>
-                    <div class="profile-section active">
-                        <a href="profile.html" class="profile-text">
-                            <i class="fas fa-user profile-icon mr-2"></i>
-                            Profile
-                        </a>
-                    </div>
-                    <div class="settings-section">
-                        <a href="settings.html" class="settings-text">
-                            <i class="fas fa-cog settings-icon mr-2"></i>
-                            Settings
-                        </a>
-                    </div>
+            <div class="col-lg-3 left-section border-right d-none d-lg-block" id="leftSection">
+                <div class="nav-item" data-section="home">
+                    <a href="../dashboard/dashboard.html" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        Home
+                    </a>
                 </div>
-                <div class="button">
-                    <button class="btn background" data-toggle="modal" data-target="#postModal"><span class="post">Post</span></button>
+                <div class="nav-item" data-section="search">
+                    <a href="../search/search.html" class="nav-link">
+                        <i class="fas fa-search nav-icon"></i>
+                        Search
+                    </a>
                 </div>
-
-                <div class="d-flex justify-content-between align-items-center py-5 px-3 mt-5">
+                <div class="nav-item" data-section="liked-posts">
+                    <a href="../likedPosts/likedposts.html" class="nav-link">
+                        <i class="fas fa-heart nav-icon"></i>
+                        Liked Posts
+                    </a>
+                </div>
+                <div class="nav-item active" data-section="profile">
+                    <a href="#" id="profileButton" class="nav-link">
+                        <i class="fas fa-user nav-icon"></i>
+                        Profile
+                    </a>
+                </div>
+                <div class="nav-item" data-section="settings">
+                    <a href="../settings/settings.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        Settings
+                    </a>
+                </div>
+                <div class="post-button-container">
+                    <button class="btn btn-post" data-toggle="modal" data-target="#postModal">Post</button>
+                </div>
+                <div class="user-info">
                     <div class="d-flex align-items-center">
-                        <div class="rounded-circle overflow-hidden mt-5" style="width: 40px; height: 40px;">
-                            <img src="" class="w-100 h-100" alt="Circular Picture" id="userpfp">
+                        <div class="rounded-circle overflow-hidden" style="width: 40px; height: 40px;">
+                            <img src="" class="w-100 h-100" alt="Profile Picture" id="userpfp">
                         </div>
-                        <span class="ml-3 mt-5" id="connected_username">Username</span>
+                        <span class="ml-3" id="connected_username">Username</span>
                     </div>
-                    <div class="dropdown mt-5">
-                        <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu"></button>
                             <i class="fas fa-ellipsis-h"></i>
                         </button>
-                        <div class="dropdown-menu dropdown-menu-up" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <div class="dropdown-item">
-                               Your Wallet Address: <span class="text-dark" id="fullAddress"> </span>
+                               Your Wallet Address: <span class="text-dark" id="fullAddress"></span>
                             </div>
-                            <button class="dropdown-item" href="#" id="disconnectButton">
+                            <button class="dropdown-item" id="disconnectButton">
                                 <i class="fas fa-sign-out-alt mr-2"></i> Disconnect
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-9 right-section" id="rightSection">
-                <!-- Author Profile Section -->
-                <div class="author-posts-container">
-                    <div class="author-profile">
-                        <img src="" alt="Author Profile Picture" id="authorProfilePicture" class="img-fluid rounded-circle">
-                        <div class="author-info">
-                            <h2 id="authorUsername"></h2>
-                        </div>
+            <div class="col-lg-9 right-section" id="rightSection">
+                <div class="author-profile">
+                    <img src="" alt="Author Profile Picture" id="authorProfilePicture" class="img-fluid rounded-circle">
+                    <div class="author-info">
+                        <h2 id="authorUsername"></h2>
                     </div>
-                    <hr> <!-- Add a horizontal line -->
-                    <div id="postsContainer"></div>
+                </div>
+                <hr>
+                <div id="postsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav d-lg-none">
+        <a href="../dashboard/dashboard.html" class="nav-item" data-section="home"><i class="fas fa-home"></i></a>
+        <a href="../search/search.html" class="nav-item" data-section="search"><i class="fas fa-search"></i></a>
+        <a href="../likedPosts/likedposts.html" class="nav-item" data-section="liked-posts"><i class="fas fa-heart"></i></a>
+        <a href="#" id="mobileProfileButton" class="nav-item active" data-section="profile"><i class="fas fa-user"></i></a>
+        <a href="../settings/settings.html" class="nav-item" data-section="settings"><i class="fas fa-cog"></i></a>
+    </div>
+
+    <div class="modal fade" id="postModal" tabindex="-1" role="dialog" aria-labelledby="postModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="postModalLabel">Create a Post</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" id="postContent" placeholder="What's happening?" rows="4"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="postButton">Post</button>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../config.js"></script>
     <script src="profile.js"></script>
-    <script>
-        $(document).ready(function() {
-            $(".background .post").click(function() {
-                $("#postModal").modal('show');
-            });
-        });
-
-        $("#disconnectButton").click(function() {
-            disconnectWallet();
-        });
-
-        async function disconnectWallet() {
-            if (window.ethereum) {
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    window.location.href = '../signin/signin.html';
-                } catch (error) {
-                    console.error("Error disconnecting MetaMask:", error);
-                }
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", async function() {
-            let web3;
-            let accounts;
-            const contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154';
-            const contractRegistryABI = [
-                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
-                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
-                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-                {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-            ];
-
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                accounts = await web3.eth.requestAccounts();
-            } else {
-                console.error('MetaMask is not installed');
-            }
-
-            const walletAddress = accounts[0];
-            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-            const username = await contractRegistry.methods.getUsername(walletAddress).call();
-
-            document.getElementById('fullAddress').innerText = walletAddress;
-            document.getElementById('connected_username').innerText = username;
-
-            const cid = await contractRegistry.methods.getCID(walletAddress).call();
-            const pinataUrl = `https://purple-wonderful-jay-289.mypinata.cloud/ipfs/${cid}`;
-            document.getElementById('userpfp').src = pinataUrl;
-        });
-
-        document.getElementById('postButton').addEventListener('click', function() {
-            const postContent = document.getElementById('postContent').value;
-            console.log('Post content:', postContent);
-            $('#postModal').modal('hide');
-        });
-    </script>
 </body>
 </html>

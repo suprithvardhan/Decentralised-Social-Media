@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Loop Connect</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.5.3.min.js"></script>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../dashboard/dashboard.html">
+                <i class="fas fa-infinity" style="font-size: 32px; color: #47a1f1;"></i>
+                Loop Connect
+            </a>
+            <div class="search-container ml-auto">
+                <input type="text" class="search-input" id="searchInput" placeholder="Discover what you are looking for...">
+                <div id="searchResults" class="search-results"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid main-container" style="padding-top: 56px;">
+        <div class="row">
+            <div class="col-md-3 left-section border-right border-dark" id="leftSection">
+                <!-- Left section content -->
+                <div class="groups-1">
+                    <div class="home-div home-section">
+                        <a href="../dashboard/dashboard.html" class="home-text">
+                            <i class="fas fa-home home-icon mr-2"></i>
+                            Home
+                        </a>
+                    </div>
+                    <div class="search-section">
+                        <a href="../dashboard/search.html" class="search-text">
+                            <i class="fas fa-search search-icon mr-2"></i>
+                            Search
+                        </a>
+                    </div>
+                    <div class="liked-posts-section">
+                        <a href="../likedPosts/likedposts.html" class="liked-posts-text">
+                            <i class="fas fa-heart liked-posts-icon mr-2"></i>
+                            Liked Posts
+                        </a>
+                    </div>
+                    <div class="profile-section">
+                        <a href="#" id="profileButton" class="profile-text">
+                            <i class="fas fa-user profile-icon mr-2"></i>
+                            Profile
+                        </a>
+                    </div>
+                    <div class="settings-section active">
+                        <a href="settings.html" class="settings-text">
+                            <i class="fas fa-cog settings-icon mr-2"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+                <div class="button">
+                    <button class="btn background" data-toggle="modal" data-target="#postModal"><span class="post">Post</span></button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-5 px-3 mt-5">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle overflow-hidden mt-5" style="width: 40px; height: 40px;">
+                            <img src="" class="w-100 h-100" alt="Circular Picture" id="userpfp">
+                        </div>
+                        <span class="ml-3 mt-5" id="connected_username">Username</span>
+                    </div>
+                    <div class="dropdown mt-5">
+                        <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-up" aria-labelledby="dropdownMenuButton">
+                            <div class="dropdown-item">
+                               Your Wallet Address: <span class="text-dark" id="fullAddress"> </span>
+                            </div>
+                            <button class="dropdown-item" href="#" id="disconnectButton">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 right-section" id="rightSection">
+                <h2 class="mb-4">Settings</h2>
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" placeholder="Enter new username">
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePicture">Profile Picture</label>
+                        <input type="file" class="form-control-file" id="profilePicture" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="postModal" tabindex="-1" role="dialog" aria-labelledby="postModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color:rgba(23, 24, 26, 255);">
+                <div class="modal-header border-0">
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="background-color: #2f3133;">
+                    <textarea class="form-control" id="postContent" placeholder="What is happening?!" rows="10" style="color: #fff; background-color: #2f3133; border: none; resize: none;"></textarea>
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" id="postButton" style="background-color: #630099; border: 1px solid #511078;">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav">
+        <a href="../dashboard/dashboard.html" class="nav-item"><i class="fas fa-home"></i></a>
+        <a href="../dashboard/search.html" class="nav-item"><i class="fas fa-search"></i></a>
+        <a href="../notifications/notifications.html" class="nav-item"><i class="fas fa-bell"></i></a>
+        <a href="#" id="mobileProfileButton" class="nav-item"><i class="fas fa-user"></i></a>
+    </div>
+
+    <button class="btn btn-primary floating-post-button" data-toggle="modal" data-target="#postModal" title="Create New Post">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script src="../config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="settings.js"></script>
+    <script>
+        $(document).ready(function() {
+        $(".background .post").click(function() {
+            $("#postModal").modal('show');
+        });
+    });
+
+    $("#disconnectButton").click(function() {
+        disconnectWallet();
+    });
+
+
+    async function disconnectWallet() {
+        if (window.ethereum) {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                window.location.href = '../signin/signin.html';
+            } catch (error) {
+                console.error("Error disconnecting MetaMask:", error);
+            }
+        }
+    }
+
+    
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    searchInput.addEventListener('input', debounce(handleSearch, 300));
+
+    async function handleSearch() {
+const searchTerm = searchInput.value.trim().toLowerCase();
+if (searchTerm.length === 0) {
+    searchResults.style.display = 'none';
+    return;
+}
+
+try {
+    let web3;
+    let accounts;
+    if (window.ethereum) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        web3 = new Web3(window.ethereum);
+        accounts = await web3.eth.getAccounts();
+        const userRegistryContract = new web3.eth.Contract(window.appConfig.contracts.userRegistry.abi, window.appConfig.contracts.userRegistry.address);
+        const result = await userRegistryContract.methods.getAllUsernames().call();
+        
+        // Destructure the result properly
+        const addresses = result[0];
+        const usernames = result[1];
+        
+        console.log(addresses, usernames);
+
+        const filteredResults = usernames
+            .map((username, index) => ({ username, address: addresses[index] }))
+            .filter(user => user.username.toLowerCase().startsWith(searchTerm))
+            .slice(0, 5); // Limit to 5 suggestions
+
+        displaySearchResults(filteredResults);
+    }
+} catch (error) {
+    console.error('Error searching users:', error);
+}
+}
+
+function displaySearchResults(results) {
+searchResults.innerHTML = '';
+if (results.length === 0) {
+    searchResults.style.display = 'none';
+    return;
+}
+
+
+results.forEach(result => {
+    const resultItem = document.createElement('div');
+    resultItem.classList.add('search-result-item');
+    
+    const avatar = document.createElement('div');
+    avatar.classList.add('user-avatar');
+    const firstLetter = result.username.charAt(0).toUpperCase();
+    avatar.textContent = firstLetter;
+    avatar.style.backgroundColor = getAvatarColor(firstLetter);
+
+    const userInfo = document.createElement('div');
+    userInfo.classList.add('user-info');
+
+    const username = document.createElement('span');
+    username.classList.add('username');
+    username.textContent = result.username;
+
+    const address = document.createElement('span');
+    address.classList.add('user-address');
+    address.textContent = result.address;
+
+    userInfo.appendChild(username);
+    userInfo.appendChild(address);
+
+    resultItem.appendChild(avatar);
+    resultItem.appendChild(userInfo);
+
+    resultItem.addEventListener('click', () => {
+        window.location.href = `../Author/Author.html?address=${result.address}`;
+    });
+    
+    searchResults.appendChild(resultItem);
+});
+
+searchResults.style.display = 'block';
+}
+
+    function debounce(func, delay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    // Close search results when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+    function getAvatarColor(letter) {
+const colors = [
+    '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e',
+    '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
+    '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6',
+    '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d'
+];
+const charCode = letter.charCodeAt(0) - 65;
+return colors[charCode % colors.length];
+}
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        let web3;
+        let accounts;
+        if (window.ethereum) {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                web3 = new Web3(window.ethereum);
+                accounts = await web3.eth.getAccounts();
+                const contractRegistry = new web3.eth.Contract(
+                    window.appConfig.contracts.userRegistry.abi,
+                    window.appConfig.contracts.userRegistry.address
+                );
+
+                const username = await contractRegistry.methods.getUsername(accounts[0]).call();
+                const profilePicCID = await contractRegistry.methods.getCID(accounts[0]).call();
+                const connectedUsername = document.getElementById('connected_username');
+                const userProfilePic = document.getElementById('userpfp');
+
+                connectedUsername.textContent = username;
+                if (profilePicCID) {
+                    const profilePicUrl = `https://ipfs.io/ipfs/${profilePicCID}`;
+                    userProfilePic.src = profilePicUrl;
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        } else {
+            console.error("MetaMask is not detected");
+        }
+    });
+
+ /*  function updateTimeAndDate() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const day = now.getDate();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        const formattedDate = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+
+        document.getElementById('time').textContent = formattedTime;
+        document.getElementById('date').textContent = formattedDate;
+    }
+
+    setInterval(updateTimeAndDate, 1000);*/
+</script>
+</body>
+</html>

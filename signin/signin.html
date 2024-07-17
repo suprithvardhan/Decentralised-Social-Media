@@ -6,98 +6,159 @@
     <title>Signin</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
     <style>
-        body{
-            background-image: url(./Frame\ 1-Photoroom.png);
-            background-repeat: no-repeat;
-            background-size: cover;
+        body {
+            background: linear-gradient(135deg, #9900FF, #000066);
             margin: 0;
-            padding:0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .right-container{
-            margin-top: 120px;
-            padding-left: 120px;
+        .container {
+            max-width: 1200px;
+            padding: 0;
+        }
+        .row {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .left-container {
+            padding: 40px;
+        }
+        .right-container {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .signin-image {
+            width: 100%;
+            height: auto;
+        }
+        h2 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            color: #ffffff;
+            opacity: 0.8;
+            margin-bottom: 30px;
         }
         button {
-            border-radius: 20px;
-            width: 350px;
-            height: 40px;
+            border-radius: 25px;
+            width: 100%;
+            height: 50px;
+            margin-bottom: 15px;
+            border: none;
+            padding: 0 20px;
+            font-size: 16px;
+            background-color: #ffffff;
+            color: #9900FF;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
         }
-        
-        #logInButton, #connectWalletButton {
-            display: none;
+        button:hover {
+            background-color: #9900FF;
+            color: #ffffff;
         }
-        .active {
-            display: block !important;
+        .signup-link {
+            color: #ffffff;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .signup-link a {
+            color: #ffffff;
+            text-decoration: underline;
         }
         .user-not-found {
             display: none;
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 20px;
             background-color: red;
             color: white;
-            padding: 5px 10px;
+            padding: 10px 20px;
             border-radius: 5px;
+            z-index: 1000;
+        }
+        @media (max-width: 767px) {
+            body {
+                background: linear-gradient(135deg, #9900FF, #000066);
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url('./signupbg2.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                filter: blur(10px);
+                opacity: 0.7;
+                z-index: -1;
+            }
+            .container {
+                padding: 20px;
+            }
+            .row {
+                background-color: rgba(255, 255, 255, 0.1);
+                margin: 0;
+                border-radius: 20px;
+            }
+            .left-container {
+                display: none;
+            }
+            .right-container {
+                padding: 30px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="user-not-found" id="userNotFound">User account not found. Please register.</div>
     <div class="container">
         <div class="row">
-            <div class="col-6">
-                <img src="./signupbg2.png" alt="signupimage" class="mt-4">
+            <div class="col-md-6 left-container">
+                <img src="./signupbg2.png" alt="signinimage" class="signin-image">
             </div>
-            <div class="col-6 right-container">
-                <div class="row">
-                    <Span class="signup-text text-white"> Log in to Loop Connect</Span>
+            <div class="col-md-6 right-container">
+                <h2>Log in to Loop Connect</h2>
+                <p class="tagline">
+                    Welcome back! Log in to your account and<br>
+                    explore the Loop Connect community.
+                </p>
+                <button id="connectWalletButton">Connect Wallet</button>
+                <button id="logInButton" style="display: none;">Log In</button>
+                <div class="signup-link">
+                    Don't have an account? <a href="../singup/signup.html">Sign up</a>
                 </div>
-                <div class="row mt-3">
-                    <span class="tagline text-white"> 
-                        Welcome back! Log in to your account and<br> explore the Loop Connect community.
-                    </span>
-                </div>
-              
-                <div class="row mt-4">
-                     <button id="connectWalletButton" class="active"><span class="button-text">Connect Wallet</span></button>
-                     <button id="logInButton" class=""><span class="button-text">Log In</span></button>
-                </div>
-                <div class="row mt-4">
-                    <span class="text-white">Don't have an account?<a href="../singup/signup.html"> Sign up</a></span>
-                </div>
-                
             </div>
         </div>
     </div>
-<div class="user-not-found" id="userNotFound">User account not found. Please register.</div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.0/web3.min.js"></script>
+    <script src="../config.js"></script>
     <script>
         let web3;
         let accounts;
-        let contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154'; // Update with your deployed UserRegistry contract address
-        let contractRegistryABI = [
-                                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
-                                    {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                                    {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
-                                    {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                                    {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-                                    {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-                                    {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-                                    {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-                                    ];
-
-
         async function connectWallet() {
             if (window.ethereum) {
                 try {
                     web3 = new Web3(window.ethereum);
                     accounts = await web3.eth.requestAccounts();
-                    console.log("connected metamask Successfully");
-                     // Metamask successfully connected
-                     document.getElementById('connectWalletButton').classList.remove('active');
-                    document.getElementById('logInButton').classList.add('active');
+                    console.log("Connected to MetaMask successfully");
+                    document.getElementById('connectWalletButton').style.display = 'none';
+                    document.getElementById('logInButton').style.display = 'block';
                 } catch (error) {
                     console.error('Error connecting to wallet:', error);
                 }
@@ -113,10 +174,8 @@
                 const username = await getUsernameFromWallet();
                 const isUserSignedUp = await checkUserRegistration(username);
                 if (isUserSignedUp) {
-                    // Redirect to dashboard if user is registered
                     window.location.href = '../dashboard/dashboard.html';
                 } else {
-                    // Display user not found message for 7 seconds
                     document.getElementById('userNotFound').style.display = 'block';
                     setTimeout(() => {
                         document.getElementById('userNotFound').style.display = 'none';
@@ -129,20 +188,20 @@
 
         document.getElementById('logInButton').addEventListener('click', logIn);
 
-        async function getUsernameFromWallet() {
+        async function checkUserRegistration(username) {
+            const contractRegistry = new web3.eth.Contract(window.appConfig.contracts.userRegistry.abi, window.appConfig.contracts.userRegistry.address);
+            const isUserSignedUp = await contractRegistry.methods.isUserAlreadySignedUp(accounts[0]).call();
+            console.log(isUserSignedUp);
+            return isUserSignedUp;
+        }
+         async function getUsernameFromWallet() {
             const accounts = await web3.eth.getAccounts();
-            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
+            const contractRegistry = new web3.eth.Contract(window.appConfig.contracts.userRegistry.abi, window.appConfig.contracts.userRegistry.address);
             const username = await contractRegistry.methods.getUsername(accounts[0]).call();
             console.log(username);
             return username;
         }
 
-        async function checkUserRegistration(username) {
-            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-            const isUserSignedUp = await contractRegistry.methods.isUserAlreadySignedUp(accounts[0]).call();
-            console.log(isUserSignedUp);
-            return isUserSignedUp;
-        }
     </script>
 </body>
 </html>

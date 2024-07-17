@@ -3,76 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup</title>
+    <title>Signup - Loop Connect</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <style>
         body {
-            background-image: url(./Frame\ 1-Photoroom.png);
-            background-repeat: no-repeat;
-            background-size: cover;
+            background: linear-gradient(135deg, #9900FF, #000066);
             margin: 0;
             padding: 0;
-            position: relative;
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
-            display: none;
-            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            display: flex;
             align-items: center;
-            z-index: 999;
-            flex-direction: column;
+            justify-content: center;
         }
-        .loading-spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
+        .container {
+            max-width: 1200px;
+            padding: 0;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .row {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
         }
-        .loading-message {
-            margin-top: 20px;
-            color: #333;
-            font-size: 1.2em;
+        .left-container {
+            padding: 40px;
         }
         .right-container {
-            margin-top: 120px;
-            padding-left: 120px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        input[type="text"],
-        button {
-            border-radius: 20px;
-            width: 350px;
-            height: 40px;
+        .signup-image {
+            width: 100%;
+            height: auto;
+        }
+        h2 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            color: #ffffff;
+            opacity: 0.8;
+            margin-bottom: 30px;
         }
         .image-circle {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background-color: #ccc;
-            margin-left: 60px;
-            position: relative;
-            overflow: hidden;
+            background-color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            margin: 0 auto 30px;
+            overflow: hidden;
         }
         .camera-icon {
-            color: #fff;
+            color: #9900FF;
             font-size: 40px;
-            position: absolute;
         }
         .selected-image {
             width: 100%;
@@ -83,71 +76,265 @@
         .file-input {
             display: none;
         }
-        #signUpButton,
-        #connectWalletButton {
-            display: none;
+        input[type="text"],
+        button {
+            border-radius: 25px;
+            width: 100%;
+            height: 50px;
+            margin-bottom: 15px;
+            border: none;
+            padding: 0 20px;
+            font-size: 16px;
         }
-        .active {
-            display: block !important;
+        input[type="text"] {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        button {
+            background-color: #ffffff;
+            color: #9900FF;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #9900FF;
+            color: #ffffff;
+        }
+        .signin-link {
+            color: #ffffff;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .signin-link a {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            flex-direction: column;
+        }
+        .loading-spinner {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            perspective: 100px;
+        }
+        .loading-spinner::before,
+        .loading-spinner::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            animation: spin 2s linear infinite;
+        }
+        .loading-spinner::before {
+            border-top-color: #9900FF;
+            animation-delay: -1s;
+        }
+        .loading-spinner::after {
+            border-bottom-color: #00FFFF;
+        }
+        @keyframes spin {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            50% { transform: rotateX(180deg) rotateY(180deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+        .loading-message {
+            margin-top: 20px;
+            color: #ffffff;
+            font-size: 1.2em;
+            text-align: center;
+            max-width: 80%;
+        }
+        .loading-progress {
+            width: 200px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .loading-progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #00FFFF;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .cropper-view-box,
+        .cropper-face {
+            border-radius: 50%;
+        }
+        .cropper-view-box {
+            box-shadow: 0 0 0 1px #39f;
+            outline: 0;
+        }
+        .cropper-face {
+            background-color: inherit !important;
+        }
+        .cropper-dashed, .cropper-point, .cropper-line {
+            display: none !important;
+        }
+        #cropModal .modal-content {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+        }
+        #cropModal .modal-header, #cropModal .modal-footer {
+            border: none;
+        }
+        #cropModal .modal-footer {
+            justify-content: space-between;
+            padding: 1rem;
+        }
+        #cropModal .btn {
+            width: 48%;
+            border-radius: 25px;
+        }
+        #cropModal .btn-primary {
+            background-color: #9900FF;
+            border-color: #9900FF;
+        }
+        #cropModal .btn-primary:hover {
+            background-color: #7700CC;
+            border-color: #7700CC;
+        }
+        .cropper-container {
+            width: 100%;
+            height: 300px;
+            background-color: #f0f0f0;
+            margin-bottom: 20px;
+        }
+        #cropModal .modal-dialog {
+            max-width: 500px;
+            width: 90%;
+            margin: 1.75rem auto;
+        }
+        #cropModal .modal-content {
+            height: 100%;
+        }
+        #cropModal .modal-body {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 120px);
+        }
+        @media (max-width: 767px) {
+            body {
+                background: linear-gradient(135deg, #9900FF, #000066);
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url('./signupbg2.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                filter: blur(10px);
+                opacity: 0.7;
+                z-index: -1;
+            }
+            .container {
+                padding: 20px;
+            }
+            .row {
+                background-color: rgba(255, 255, 255, 0.1);
+                margin: 0;
+                border-radius: 20px;
+            }
+            .left-container {
+                display: none;
+            }
+            .right-container {
+                padding: 30px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-message">Creating account...</div>
+        <div class="loading-message" id="loadingMessage">Initializing account creation...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-6">
-                <img src="./signupbg2.png" alt="signupimage" class="mt-4">
+            <div class="col-md-6 left-container">
+                <img src="./signupbg2.png" alt="signupimage" class="signup-image">
             </div>
-            <div class="col-6 right-container">
-                <div class="row">
-                    <span class="signup-text text-white"> SignUp to Loop Connect</span>
+            <div class="col-md-6 right-container">
+                <h2>SignUp to Loop Connect</h2>
+                <p class="tagline">
+                    Join our growing network today! Sign up now<br>
+                    and become a part of our vibrant community
+                </p>
+                <div class="image-circle">
+                    <input type="file" id="fileInput" class="file-input" accept="image/png, image/jpeg">
+                    <i class="fas fa-camera camera-icon"></i>
+                    <img src="" alt="selected-image" class="selected-image">
                 </div>
-                <div class="row mt-3">
-                    <span class="tagline text-white"> 
-                        Join our growing network today! Sign up now<br> and become a part of our vibrant community
-                    </span>
-                </div>
-                <div class="row mt-4">
-                    <label for="fileInput" class="image-circle ">
-                        <input type="file" id="fileInput" class="file-input" accept="image/png, image/jpeg">
-                        <i class="fas fa-camera camera-icon"></i>
-                        <img src="" alt="selected-image" class="selected-image">
-                    </label>
-                </div>
-                <div class="row mt-5">
-                    <input type="text" id="usernameInput" placeholder="  Username">
-                </div>
-                <div class="row mt-4">
-                    <button id="connectWalletButton" class="active"><span class="button-text">Connect Wallet</span></button>
-                    <button id="signUpButton" class=""><span class="button-text">Sign Up</span></button>
-                </div>
-                <div class="row mt-4">
-                    <span class="text-white">Already have an account?<a href="../signin/signin.html"> Sign in</a></span>
+                <input type="text" id="usernameInput" placeholder="Username">
+                <button id="connectWalletButton">Connect Wallet</button>
+                <button id="signUpButton" style="display: none;">Sign Up</button>
+                <div class="signin-link">
+                    Already have an account? <a href="../signin/signin.html">Sign in</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropModalLabel">Crop Profile Picture</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="cropper-container">
+                        <img id="cropperImage" src="" alt="Image to crop">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="cropButton">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.0/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../config.js"></script>
     <script>
         let web3;
         let accounts;
-        const contractRegistryAddress = '0x1C9ce176f4D2556749e86EDF43a5Ad354ECF0154'; // Update with your deployed UserRegistry contract address
-        const contractRegistryABI = [
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"cid","type":"string"}],"name":"CIDStored","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"username","type":"string"}],"name":"UsernameRegistered","type":"event"},
-            {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"registerUsername","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"string","name":"_cid","type":"string"}],"name":"storeCID","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"getAddressByUsername","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getCID","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"getUsername","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_userAddress","type":"address"}],"name":"isUserAlreadySignedUp","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"string","name":"_username","type":"string"}],"name":"usernameAvailability","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-        ];
+        let cropper;
 
         async function connectWallet() {
             if (window.ethereum) {
@@ -156,8 +343,8 @@
                     accounts = await web3.eth.requestAccounts();
                     document.getElementById('fileInput').disabled = false;
                     console.log("Connected to MetaMask successfully");
-                    document.getElementById('connectWalletButton').classList.remove('active');
-                    document.getElementById('signUpButton').classList.add('active');
+                    document.getElementById('connectWalletButton').style.display = 'none';
+                    document.getElementById('signUpButton').style.display = 'block';
                 } catch (error) {
                     console.error('Error connecting to wallet:', error);
                 }
@@ -178,33 +365,75 @@
             if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    selectedImage.src = e.target.result;
-                    cameraIcon.style.display = 'none';
-                    selectedImage.style.display = 'block';
+                    $('#cropperImage').attr('src', e.target.result);
+                    $('#cropModal').modal('show');
+                    
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    $('#cropModal').on('shown.bs.modal', function() {
+                        cropper = new Cropper(document.getElementById('cropperImage'), {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            cropBoxMovable: false,
+                            cropBoxResizable: false,
+                            minCropBoxWidth: 200,
+                            minCropBoxHeight: 200,
+                            guides: false,
+                            center: false,
+                            highlight: false,
+                            background: false,
+                            autoCropArea: 0.8,
+                            responsive: true,
+                        });
+                    });
                 };
                 reader.readAsDataURL(file);
-                console.log("Displayed selected image in circle");
             }
+        });
+
+        window.addEventListener('resize', function() {
+            if (cropper) {
+                cropper.reset();
+            }
+        });
+
+        document.getElementById('cropButton').addEventListener('click', function() {
+            const croppedCanvas = cropper.getCroppedCanvas({
+                width: 200,
+                height: 200,
+            });
+
+            croppedCanvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                selectedImage.src = url;
+                cameraIcon.style.display = 'none';
+                selectedImage.style.display = 'block';
+                $('#cropModal').modal('hide');
+            }, 'image/png');
         });
 
         imageCircle.addEventListener('click', function() {
             fileInput.click();
         });
 
-        async function uploadImageToPinata(imageData) {
+        async function uploadImageToPinata(imageBlob) {
             const formData = new FormData();
-            formData.append('file', imageData);
+            formData.append('file', imageBlob, 'profile_image.png');
             try {
-                console.log("Uploading to Pinata...");
+                updateLoadingMessage("Uploading image to Pinata...");
                 const response = await axios.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {
                     headers: {
-                        'pinata_api_key': '3db15efd4462cbddeeb2', // Replace with your Pinata API key
-                        'pinata_secret_api_key': '81cb93e99da565a57aca234048af75c4083a5e49274016e4bba47258abf0e3dc' // Replace with your Pinata API secret
+                        'pinata_api_key': '3db15efd4462cbddeeb2',
+                        'pinata_secret_api_key': '81cb93e99da565a57aca234048af75c4083a5e49274016e4bba47258abf0e3dc'
                     }
                 });
 
                 const data = response.data;
                 console.log("Uploaded to Pinata:", data.IpfsHash);
+                updateLoadingMessage("Image uploaded successfully");
                 return data.IpfsHash;
             } catch (error) {
                 console.error('Error uploading file to Pinata:', error);
@@ -219,72 +448,152 @@
                 return;
             }
 
-            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-            const isAvailable = await contractRegistry.methods.usernameAvailability(usernameInput).call();
-            if (!isAvailable) {
-                alert('Username is not available');
-                return;
-            }
+            showLoadingOverlay();
+            updateLoadingMessage("Checking username availability...");
 
             try {
-                showLoadingOverlay();
+                const contractRegistry = new web3.eth.Contract(window.appConfig.contracts.userRegistry.abi, window.appConfig.contracts.userRegistry.address);
+                const isAvailable = await contractRegistry.methods.usernameAvailability(usernameInput).call();
+                if (!isAvailable) {
+                    throw new Error('Username is not available');
+                }
 
-                await registerUsername(usernameInput);
+                updateLoadingMessage("Preparing image for upload...");
+                const croppedCanvas = cropper.getCroppedCanvas({
+                    width: 200,
+                    height: 200,
+                });
 
-                const fileInput = document.getElementById('fileInput');
-                const file = fileInput.files[0];
-                const cid = await uploadImageToPinata(file);
-
-                await storeCIDInUserPFP(cid);
-
-                showSuccessMessage();
-
-                setTimeout(() => {
-                    hideLoadingOverlay();
-                    window.location.href = '../dashboard/dashboard.html';
-                }, 2000); // 2 seconds delay
+                croppedCanvas.toBlob(async function(blob) {
+                    try {
+                        const cid = await uploadImageToPinata(blob);
+                        updateLoadingMessage("Sending transaction request to your wallet...");
+                        await registerUser(usernameInput, cid);
+                        updateLoadingMessage("Account created successfully!");
+                        updateProgressBar(100);
+                        setTimeout(() => {
+                            hideLoadingOverlay();
+                            window.location.href = '../dashboard/dashboard.html';
+                        }, 2000);
+                    } catch (error) {
+                        handleError(error);
+                    }
+                }, 'image/png');
             } catch (error) {
-                console.error('Error signing up:', error);
-                alert('Error signing up. Please try again.');
-                hideLoadingOverlay();
+                handleError(error);
             }
         }
 
-        async function registerUsername(username) {
-            const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-            await contractRegistry.methods.registerUsername(username).send({ from: accounts[0] });
-            console.log("Username registered successfully");
-        }
-
-        async function storeCIDInUserPFP(cid) {
-            const contractPFP = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-            await contractPFP.methods.storeCID(cid).send({ from: accounts[0] });
-            console.log("CID stored in UserPFPStore successfully");
-        }
-
-        function showLoadingOverlay() {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.style.display = 'flex';
-        }
-
-        function hideLoadingOverlay() {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.style.display = 'none';
-        }
-
-        function showSuccessMessage() {
-            const loadingSpinner = document.querySelector('.loading-spinner');
-            loadingSpinner.style.borderColor = '#4CAF50';
-            loadingSpinner.style.borderTopColor = '#4CAF50';
-            const loadingMessage = document.querySelector('.loading-message');
-            loadingMessage.textContent = 'Account created successfully';
-
-            const checkmarkIcon = document.createElement('i');
-            checkmarkIcon.classList.add('fas', 'fa-check-circle', 'fa-5x', 'text-success');
-            loadingSpinner.parentNode.replaceChild(checkmarkIcon, loadingSpinner);
+        async function registerUser(username, cid) {
+            const contractRegistry = new web3.eth.Contract(window.appConfig.contracts.userRegistry.abi, window.appConfig.contracts.userRegistry.address);
+            try {
+                updateLoadingMessage("Confirming transaction...");
+                await contractRegistry.methods.registerUser(username, cid).send({ from: accounts[0] });
+                console.log("User registered successfully");
+                updateLoadingMessage("Transaction confirmed. Finalizing account creation...");
+            } catch (error) {
+                console.error('Error registering user:', error);
+                throw error;
+            }
         }
 
         document.getElementById('signUpButton').addEventListener('click', signUp);
+
+        function showLoadingOverlay() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            updateProgressBar(0);
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function updateLoadingMessage(message) {
+            document.getElementById('loadingMessage').textContent = message;
+        }
+
+        function updateProgressBar(percentage) {
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        function handleError(error) {
+            console.error('Error signing up:', error);
+            if (error.message.includes('User rejected')) {
+                updateLoadingMessage("Transaction cancelled by user");
+            } else {
+                updateLoadingMessage("Error occurred while creating account");
+            }
+            updateProgressBar(100);
+            setTimeout(() => {
+                hideLoadingOverlay();
+            }, 3000);
+        }
+
+        let progressInterval;
+        function simulateProgress(startPercentage, endPercentage, duration) {
+            clearInterval(progressInterval);
+            let progress = startPercentage;
+            const step = (endPercentage - startPercentage) / (duration / 100);
+            progressInterval = setInterval(() => {
+                progress += step;
+                if (progress >= endPercentage) {
+                    progress = endPercentage;
+                    clearInterval(progressInterval);
+                }
+                updateProgressBar(progress);
+            }, 100);
+        }
+
+        async function signUp() {
+            const usernameInput = document.getElementById('usernameInput').value.trim();
+            if (!usernameInput) {
+                alert('Please enter a username');
+                return;
+            }
+
+            showLoadingOverlay();
+            updateLoadingMessage("Checking username availability...");
+            simulateProgress(0, 20, 2000);
+
+            try {
+                const contractRegistry = new web3.eth.Contract(window.appConfig.contracts.userRegistry.abi, window.appConfig.contracts.userRegistry.address);
+                const isAvailable = await contractRegistry.methods.usernameAvailability(usernameInput).call();
+                if (!isAvailable) {
+                    throw new Error('Username is not available');
+                }
+
+                updateLoadingMessage("Preparing image for upload...");
+                simulateProgress(20, 40, 2000);
+
+                const croppedCanvas = cropper.getCroppedCanvas({
+                    width: 200,
+                    height: 200,
+                });
+
+                croppedCanvas.toBlob(async function(blob) {
+                    try {
+                        updateLoadingMessage("Uploading image to Pinata...");
+                        simulateProgress(40, 60, 3000);
+                        const cid = await uploadImageToPinata(blob);
+
+                        updateLoadingMessage("Sending transaction request to your wallet...");
+                        simulateProgress(60, 80, 2000);
+                        await registerUser(usernameInput, cid);
+
+                        updateLoadingMessage("Account created successfully!");
+                        simulateProgress(80, 100, 1000);
+                        setTimeout(() => {
+                            hideLoadingOverlay();
+                            window.location.href = '../dashboard/dashboard.html';
+                        }, 2000);
+                    } catch (error) {
+                        handleError(error);
+                    }
+                }, 'image/png');
+            } catch (error) {
+                handleError(error);
+            }
+        }
     </script>
 </body>
 </html>
