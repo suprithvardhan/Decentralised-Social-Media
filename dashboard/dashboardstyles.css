@@ -1,4 +1,3 @@
-/*dashboardstyles.css*/
 /* Base styles */
 * {
     margin: 0;
@@ -12,12 +11,85 @@ body {
     color: #efeff1;
 }
 
+/* In your CSS file */
+.loader {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    margin: 0 auto 20px;
+}
+
+.infinity-loader {
+    width: 100%;
+    height: 100%;
+    border: 4px solid #9147ff;
+    border-radius: 50%;
+    animation: rotate 2s linear infinite;
+}
+
+.infinity-loader:before,
+.infinity-loader:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 50%;
+    border: 4px solid transparent;
+    border-top-color: #9147ff;
+    border-radius: 50%;
+    animation: rotate 1.5s linear infinite;
+}
+
+.infinity-loader:after {
+    border-top-color: transparent;
+    border-bottom-color: #9147ff;
+    animation-duration: 3s;
+}
+
+@keyframes rotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+#initial-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0e0e10;
+    color: #efeff1;
+}
+
+#lottie-container {
+    width: 300px;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+#quote-carousel {
+    max-width: 80%;
+    text-align: center;
+    font-style: italic;
+    color: #9147ff;
+    margin: 20px 0;
+}
+
 /* Navbar styles */
 .navbar {
     background-color: #18181b;
     padding: 10px 0;
     border-bottom: 1px solid #2d2d2f;
     border-radius: 0 0 10px 10px;
+    transition: top 0.3s ease;
+    top: 0;
+    position: fixed;
+    width: 100%;
+}
+
+.navbar.hide {
+    top: -70px;
 }
 
 .navbar-brand {
@@ -36,7 +108,7 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    width: 500px; /* Increased width on desktop */
+    width: 500px;
 }
 
 .search-input {
@@ -87,7 +159,7 @@ body {
     background-color: #18181b;
     height: calc(100vh - 70px);
     position: fixed;
-    width: 350px; /* Increased width from 250px to 350px */
+    width: 350px;
     padding-top: 20px;
     border-right: 1px solid #2d2d2f;
     border-radius: 0 10px 10px 0;
@@ -164,11 +236,11 @@ body {
 
 /* Right section */
 .right-section {
-    margin-left: 350px; /* Adjusted margin-left from 250px to 350px */
+    margin-left: 350px;
     padding: 20px;
 }
 
-/* Post styles */
+/* Post styles (continued) */
 .post {
     background-color: #18181b;
     border-radius: 10px;
@@ -203,7 +275,7 @@ body {
 }
 
 .post-content {
-    font-family: 'Roboto', sans-serif; /* You may need to import this font */
+    font-family: 'Roboto', sans-serif;
     font-size: 16px;
     line-height: 1.6;
     color: #efeff1;
@@ -246,6 +318,11 @@ body {
         padding: 10px 0;
         border-top: 1px solid #2d2d2f;
         border-radius: 10px 10px 0 0;
+        transition: bottom 0.3s ease;
+    }
+
+    .mobile-nav.hide {
+        bottom: -60px;
     }
 
     .mobile-nav .nav-item {
@@ -281,6 +358,15 @@ body {
     .floating-post-button:hover {
         background-color: #772ce8;
         transform: scale(1.1);
+    }
+
+    .post-header .author-name {
+        font-size: 16px;
+    }
+
+    .post-header .timestamp {
+        font-size: 12px;
+        margin-left: 10px;
     }
 }
 
@@ -367,6 +453,7 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 .dropdown-menu {
-    z-index: 1050; /* Increase this value if needed */
+    z-index: 1050;
 }

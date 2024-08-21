@@ -5,16 +5,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isLoading = false;
     let currentPage = 1;
     const postsPerPage = 10;
+    let hasShownInitialLoading = false;
+    const mobileNavbar = document.querySelector('.mobile-nav');
+    let lastScrollPosition = 0;
 
-    // Show initial loading screen
-    const initialLoading = document.getElementById('initial-loading');
-    const mainContent = document.getElementById('main-content');
+    const quotes = [
+        "Decentralization is the future of social media.",
+        "Connect, share, and grow in a decentralized world.",
+        "Your data, your control.",
+        "Building bridges in the blockchain universe.",
+        "Empowering users through decentralized networks."
+    ];
 
-    setTimeout(() => {
-        initialLoading.style.display = 'none';
-        mainContent.style.display = 'block';
-        initialize();
-    }, 2000);
+    let currentQuote = 0;
+
+    function changeQuote() {
+        const quoteElement = document.getElementById('quote');
+        quoteElement.style.opacity = 0;
+        
+        setTimeout(() => {
+            quoteElement.textContent = quotes[currentQuote];
+            quoteElement.style.opacity = 1;
+            currentQuote = (currentQuote + 1) % quotes.length;
+        }, 500);
+    }
+
+    setInterval(changeQuote, 3000);
+    changeQuote(); // Initial quote
+
+    function showMainContent() {
+        const loadingScreen = document.getElementById('initial-loading');
+        loadingScreen.style.opacity = '0';
+        loadingScreen.style.transition = 'opacity 0.5s ease-out';
+        
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            lottie.destroy(); // Stop and remove the Lottie animation
+        }, 500);
+    }
 
     async function initializeWeb3() {
         if (window.ethereum) {
@@ -39,12 +68,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function generatePostHTML(post) {
+        const isMobile = window.innerWidth <= 991;
+        const displayAuthor = isMobile ? post.author.slice(0, 6) + '...' + post.author.slice(-4) : post.author;
+        
         return `
             <div class="post" data-post-id="${post.postId}">
                 <div class="post-header">
                     <img src="${post.profilePictureUrl}" class="rounded-circle mr-2" style="width: 40px; height: 40px;" alt="Profile Picture">
-                    <a href="../Author/Author.html?address=${post.author}" class="author-name text-decoration-none text-white">${post.author}</a>
-                    <span class="timestamp ml-auto">${new Date(post.timestamp * 1000).toLocaleString()}</span>
+                    <a href="../Author/Author.html?address=${post.author}" class="author-name text-decoration-none text-white">${displayAuthor}</a>
+                    <span class="timestamp ml-auto" data-timestamp="${post.timestamp}">${formatPostTimestamp(post.timestamp)}</span>
                 </div>
                 <div class="post-content">${post.content}</div>
                 <div class="post-actions">
@@ -79,6 +111,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
+    function formatPostTimestamp(timestamp) {
+        const now = Math.floor(Date.now() / 1000);
+        const timeDiff = now - timestamp;
+        if (timeDiff < 86400) { // Less than a day
+            return `${Math.floor(timeDiff / 3600)}h ago`;
+        } else if (timeDiff < 604800) { // Less than a week
+            return `${Math.floor(timeDiff / 86400)}d ago`;
+        } else if (timeDiff < 2592000) { // Less than a month
+            return `${Math.floor(timeDiff / 604800)}w ago`;
+        } else if (timeDiff < 31536000) { // Less than a year
+            return `${Math.floor(timeDiff / 2592000)}m ago`;
+        } else {
+            return `${Math.floor(timeDiff / 31536000)}y ago`;
+        }
+    }
+
     async function fetchAndDisplayPosts(page = 1) {
         if (isLoading) return;
         isLoading = true;
@@ -88,8 +136,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             for (let i = 0; i < postsPerPage; i++) {
                 postContainer.innerHTML += createPostSkeleton();
             }
-        } else {
-            loadingPosts.style.display = 'block';
         }
 
         const postContract = new web3Provider.eth.Contract(
@@ -129,7 +175,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         addEventListeners();
         isLoading = false;
-        loadingPosts.style.display = 'none';
+        if (page > 1) {
+            loadingPosts.style.display = 'none';
+        }
 
         if (endIndex === 0) {
             window.removeEventListener('scroll', handleInfiniteScroll);
@@ -238,13 +286,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleInfiniteScroll() {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500 && !isLoading) {
             currentPage++;
+            loadingPosts.style.display = 'block';
             fetchAndDisplayPosts(currentPage);
         }
+
+        // Mobile navbar disappear on scroll
+        const currentScrollPosition = window.pageYOffset;
+        if (currentScrollPosition > lastScrollPosition) {
+            mobileNavbar.classList.add('hide');
+        } else {
+            mobileNavbar.classList.remove('hide');
+        }
+        lastScrollPosition = currentScrollPosition;
     }
 
     async function initialize() {
         await initializeWeb3();
-        await fetchAndDisplayPosts();
+
+        // Only show initial loading once
+        if (!hasShownInitialLoading) {
+            loadingPosts.style.display = 'block';
+            await fetchAndDisplayPosts();
+            loadingPosts.style.display = 'none';
+            hasShownInitialLoading = true;
+        }
 
         window.addEventListener('scroll', handleInfiniteScroll);
 
@@ -304,5 +369,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (profilePicCID) {
             document.getElementById('userpfp').src = `https://purple-wonderful-jay-289.mypinata.cloud/ipfs/${profilePicCID}`;
         }
+
+        const lottieContainer = document.getElementById('lottie-container');
+        const animation = lottie.loadAnimation({
+            container: lottieContainer,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://assets2.lottiefiles.com/packages/lf20_yyitq4tv.json'
+        });
+
+        showMainContent();
     }
+
+    await initialize();
 });

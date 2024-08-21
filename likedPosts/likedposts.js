@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function fetchAndDisplayLikedPosts() {
-        postContainer.innerHTML = ''; // Clear existing posts
+        postContainer.innerHTML = ''; 
         const postContract = new web3Provider.eth.Contract(
             appConfig.contracts.post.abi,
             appConfig.contracts.post.address
