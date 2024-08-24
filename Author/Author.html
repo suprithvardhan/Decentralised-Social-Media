@@ -10,75 +10,72 @@
     <link rel="stylesheet" href="Author.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top ">
-        <a class="navbar-brand" href="index.html">
-            <i class="fas fa-infinity" style="font-size: 32px; color: #47a1f1;"></i>
-            Loop Connect
-        </a>  
-        <div class="container">
-            <input type="text" class="form-control search-input mt-2" placeholder="Discover what you are looking for...">
-            <div class="time-container">
-                <div class="time" id="time"></div>
-                <div class="date" id="date"></div>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-infinity" style="font-size: 32px;"></i>
+                Loop Connect
+            </a>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
+                <div id="searchResults" class="search-results"></div>
             </div>
         </div>
     </nav>
 
     <div class="container-fluid main-container">
-        <div class="row left-row ">
-            <div class="col-md-3 left-section border-right border-dark" id="leftSection">
-                <div class="groups-1 mt-5">
-                    <div class="home-div home-section active">
-                        <a href="../dashboard/dashboard.html" class="home-text">
-                            <i class="fas fa-home home-icon mr-2"></i>
-                            Home
-                        </a>
-                    </div>
-                    <div class="search-section">
-                        <a href="search.html" class="search-text">
-                            <i class="fas fa-search search-icon mr-2"></i>
-                            Search
-                        </a>
-                    </div>
-                    <div class="notification-section">
-                        <a href="notifications.html" class="notification-text">
-                            <i class="fas fa-bell notification-icon mr-2"></i>
-                            Notifications
-                        </a>
-                    </div>
-                    <div class="profile-section ">
-                        <a href="profile.html" class="profile-text">
-                            <i class="fas fa-user profile-icon mr-2"></i>
-                            Profile
-                        </a>
-                    </div>
-                    <div class="settings-section">
-                        <a href="settings.html" class="settings-text">
-                            <i class="fas fa-cog settings-icon mr-2"></i>
-                            Settings
-                        </a>
-                    </div>
+        <div class="row">
+            <div class="col-lg-3 left-section border-right d-none d-lg-block" id="leftSection">
+                <div class="nav-item active" data-section="home">
+                    <a href="../dashboard/dashboard.html" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        Home
+                    </a>
                 </div>
-                <div class="button">
-                    <button class="btn background" data-toggle="modal" data-target="#postModal"><span class="post">Post</span></button>
+                <div class="nav-item" data-section="search">
+                    <a href="../search/search.html" class="nav-link">
+                        <i class="fas fa-search nav-icon"></i>
+                        Search
+                    </a>
                 </div>
-
-                <div class="d-flex justify-content-between align-items-center py-5 px-3 mt-5">
+                <div class="nav-item" data-section="liked-posts">
+                    <a href="../likedPosts/likedposts.html" class="nav-link">
+                        <i class="fas fa-heart nav-icon"></i>
+                        Liked Posts
+                    </a>
+                </div>
+                <div class="nav-item" data-section="profile">
+                    <a href="../Profile/profile.html" id="profileButton" class="nav-link">
+                        <i class="fas fa-user nav-icon"></i>
+                        Profile
+                    </a>
+                </div>
+                <div class="nav-item" data-section="settings">
+                    <a href="../settings/settings.html" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        Settings
+                    </a>
+                </div>
+                <div class="post-button-container">
+                    <button class="btn btn-post" data-toggle="modal" data-target="#postModal">Post</button>
+                </div>
+                <div class="user-info">
                     <div class="d-flex align-items-center">
-                        <div class="rounded-circle overflow-hidden mt-5" style="width: 40px; height: 40px;">
-                            <img src="" class="w-100 h-100" alt="Circular Picture" id="userpfp">
+                        <div class="rounded-circle overflow-hidden" style="width: 40px; height: 40px;">
+                            <img src="" class="w-100 h-100" alt="Profile Picture" id="userpfp">
                         </div>
-                        <span class="ml-3 mt-5" id="connected_username">Username</span>
+                        <span class="ml-3" id="connected_username">Username</span>
                     </div>
-                    <div class="dropdown mt-5">
-                        <button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu"></button>
                             <i class="fas fa-ellipsis-h"></i>
                         </button>
-                        <div class="dropdown-menu dropdown-menu-up" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <div class="dropdown-item">
-                               Your Wallet Address: <span class="text-dark" id="fullAddress"> </span>
+                               Your Wallet Address: <span class="text-dark" id="fullAddress"></span>
                             </div>
-                            <button class="dropdown-item" href="#" id="disconnectButton">
+                            <button class="dropdown-item" id="disconnectButton">
                                 <i class="fas fa-sign-out-alt mr-2"></i> Disconnect
                             </button>
                         </div>

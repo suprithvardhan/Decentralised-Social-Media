@@ -12,8 +12,12 @@ async function fetchAndDisplayAuthorPosts(authorAddress) {
     ];
 
     const web3 = new Web3(window.ethereum);
-    const contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-    const postContract = new web3.eth.Contract(postContractABI, postContractAddress);
+    const contractRegistry = new web3.eth.Contract( 
+        appConfig.contracts.userRegistry.abi,
+        appConfig.contracts.userRegistry.address);
+    const postContract = new web3.eth.Contract( 
+        appConfig.contracts.post.abi,
+        appConfig.contracts.post.address);
 
     try {
         const cid = await contractRegistry.methods.getCID(authorAddress).call();
