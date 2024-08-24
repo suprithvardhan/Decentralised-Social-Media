@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     setInterval(changeQuote, 3000);
-    changeQuote(); // Initial quote
+    changeQuote(); 
 
     function showMainContent() {
         const loadingScreen = document.getElementById('initial-loading');
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
             loadingScreen.style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
-            lottie.destroy(); // Stop and remove the Lottie animation
+            lottie.destroy();
         }, 500);
     }
 
@@ -69,14 +69,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function generatePostHTML(post) {
         const isMobile = window.innerWidth <= 991;
-        const displayAuthor = isMobile ? post.author.slice(0, 6) + '...' + post.author.slice(-4) : post.author;
+        const displayAuthor = isMobile ? `${post.author.slice(0, 6)}...${post.author.slice(-4)}` : post.author;
+        const exactTimestamp = new Date(post.timestamp * 1000).toLocaleString();
         
         return `
             <div class="post" data-post-id="${post.postId}">
                 <div class="post-header">
                     <img src="${post.profilePictureUrl}" class="rounded-circle mr-2" style="width: 40px; height: 40px;" alt="Profile Picture">
                     <a href="../Author/Author.html?address=${post.author}" class="author-name text-decoration-none text-white">${displayAuthor}</a>
-                    <span class="timestamp ml-auto" data-timestamp="${post.timestamp}">${formatPostTimestamp(post.timestamp)}</span>
+                    <span class="timestamp ml-auto" title="${exactTimestamp}">${exactTimestamp}</span>
+                    <span class="mobile-timestamp ml-auto">${formatPostTimestamp(post.timestamp)}</span>
                 </div>
                 <div class="post-content">${post.content}</div>
                 <div class="post-actions">
@@ -114,14 +116,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     function formatPostTimestamp(timestamp) {
         const now = Math.floor(Date.now() / 1000);
         const timeDiff = now - timestamp;
-        if (timeDiff < 86400) { // Less than a day
+        if (timeDiff < 60) {
+            return `${timeDiff}s ago`;
+        } else if (timeDiff < 3600) {
+            return `${Math.floor(timeDiff / 60)}m ago`;
+        } else if (timeDiff < 86400) {
             return `${Math.floor(timeDiff / 3600)}h ago`;
-        } else if (timeDiff < 604800) { // Less than a week
+        } else if (timeDiff < 604800) {
             return `${Math.floor(timeDiff / 86400)}d ago`;
-        } else if (timeDiff < 2592000) { // Less than a month
+        } else if (timeDiff < 2592000) {
             return `${Math.floor(timeDiff / 604800)}w ago`;
-        } else if (timeDiff < 31536000) { // Less than a year
-            return `${Math.floor(timeDiff / 2592000)}m ago`;
+        } else if (timeDiff < 31536000) {
+            return `${Math.floor(timeDiff / 2592000)}mo ago`;
         } else {
             return `${Math.floor(timeDiff / 31536000)}y ago`;
         }
@@ -198,27 +204,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function handleLikeClick(event) {
-        const postId = event.currentTarget.getAttribute('data-post-id');
-        const likeCount = event.currentTarget.querySelector('.like-count');
-        const isLiked = event.currentTarget.classList.contains('liked');
-
+        const button = event.currentTarget;
+        if (!button) return;
+    
+        const postId = button.getAttribute('data-post-id');
+        const likeCount = button.querySelector('.like-count');
+        if (!likeCount) return;
+    
+        const isLiked = button.classList.contains('liked');
+    
         const postContract = new web3Provider.eth.Contract(
             appConfig.contracts.post.abi,
             appConfig.contracts.post.address
         );
         const userAccount = (await web3Provider.eth.getAccounts())[0];
-
+    
         try {
             if (isLiked) {
                 await postContract.methods.dislikePost(postId).send({ from: userAccount });
-                event.currentTarget.classList.remove('liked');
+                button.classList.remove('liked');
+                const newLikeCount = parseInt(likeCount.textContent) - 1;
+                likeCount.textContent = newLikeCount;
             } else {
                 await postContract.methods.likePost(postId).send({ from: userAccount });
-                event.currentTarget.classList.add('liked');
+                button.classList.add('liked');
+                const newLikeCount = parseInt(likeCount.textContent) + 1;
+                likeCount.textContent = newLikeCount;
             }
-
-            const updatedPost = await postContract.methods.getPost(postId).call();
-            likeCount.textContent = updatedPost[3];
         } catch (error) {
             console.error('Error toggling like:', error);
         }
@@ -382,5 +394,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         showMainContent();
     }
 
+    // Function to update timestamps
+    function updateTimestamps() {
+        const timestamps = document.querySelectorAll('.mobile-timestamp');
+        timestamps.forEach(timestamp => {
+            const postTime = parseInt(timestamp.closest('.post').dataset.postId);
+            timestamp.textContent = formatPostTimestamp(postTime);
+        });
+    }
+
+    // Update timestamps every minute
+    setInterval(updateTimestamps, 60000);
+
+    function handleResponsiveDesign() {
+        const isMobile = window.innerWidth <= 991;
+        const posts = document.querySelectorAll('.post');
+        posts.forEach(post => {
+            const authorElement = post.querySelector('.author-name');
+            const author = authorElement.textContent;
+            if (isMobile) {
+                authorElement.textContent = `${author.slice(0, 6)}...${author.slice(-4)}`;
+            } else {
+                authorElement.textContent = author;
+            }
+        });
+    }
+
+    window.addEventListener('resize', handleResponsiveDesign);
+
+    // Initialize the app
     await initialize();
+    handleResponsiveDesign();
 });

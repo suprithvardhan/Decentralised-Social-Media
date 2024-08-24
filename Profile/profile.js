@@ -44,8 +44,12 @@ async function init() {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const accounts = await web3.eth.getAccounts();
             currentUserAddress = accounts[0];
-            contractRegistry = new web3.eth.Contract(contractRegistryABI, contractRegistryAddress);
-            postContract = new web3.eth.Contract(postContractABI, postContractAddress);
+            contractRegistry = new web3.eth.Contract( 
+                appConfig.contracts.userRegistry.abi,
+                appConfig.contracts.userRegistry.address);
+            postContract = new web3.eth.Contract( 
+                appConfig.contracts.post.abi,
+                appConfig.contracts.post.address);
             await loadUserInfo();
             await fetchAndDisplayAuthorPosts();
         } catch (error) {
