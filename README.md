@@ -3,7 +3,7 @@
 A revolutionary blockchain-based social media platform that reimagines online interaction through decentralized architecture, wallet-based authentication, and robust security.
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/3203c85d-d695-493f-96ae-c13342156fdb" alt="Loop Connect Landing" width="800"/>
+  <img src="https://github.com/user-attachments/assets/03fbc986-dd75-4979-b7d3-e3430faf05b1" alt="Loop Connect Landing" width="800"/>
 </div>
 
 ## 📋 Table of Contents
@@ -56,9 +56,6 @@ Loop Connect revolutionizes social media by leveraging blockchain technology for
 
 ### Smart Contract Layer
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/7f5f279e-91fd-4332-b319-8cb11029e3bd" alt="Architecture Overview" width="600"/>
-</div>
 
 Our architecture consists of:
 - 📝 **User Management Contract**
@@ -98,7 +95,7 @@ npm run dev
 ### 1. Account Creation
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/8c8671c2-1edf-4752-8a43-71257aecc896" alt="Account Creation" width="600"/>
+  <img src="https://github.com/user-attachments/assets/c9a2aaa9-09dd-43c2-b028-76f790d0af71" alt="Post Creation" width="600"/>
 </div>
 
 - Connect your Web3 wallet
@@ -118,7 +115,7 @@ npm run dev
 ### 3. Creating Posts
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/c9a2aaa9-09dd-43c2-b028-76f790d0af71" alt="Post Creation" width="600"/>
+  <img src="https://github.com/user-attachments/assets/8c8671c2-1edf-4752-8a43-71257aecc896" alt="Account Creation" width="600"/>
 </div>
 
 - Write your content
