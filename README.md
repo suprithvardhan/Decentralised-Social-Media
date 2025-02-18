@@ -143,8 +143,24 @@ We welcome contributions from the community! To contribute:
 
 ## 🤝 Team
 
-- **Lead Developer:** Your Name
-- **Blockchain Developer:** Pranay Kalekar
+<div align="center">
+  <a href="https://github.com/suprithvardhan">
+    <img src="https://avatars.githubusercontent.com/u/127759820?s=400&v=4" alt="Suprith Vardhan" width="100" style="border-radius: 50%"/>
+  </a>
+  <span>Suprith Vardhan</span>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/pranaykalekar12">
+    <img src="https://avatars.githubusercontent.com/u/181123682?v=4" alt="Pranay Kalekar" width="100" style="border-radius: 50%"/>
+  </a>
+  <span>Pranay Kalekar</span>
+</div>
+
+
+
+
+
+
+
 
 ## 📄 License
 
