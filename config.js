@@ -17,8 +17,8 @@ const config = {
         }
     },
     pinata: {
-        apiKey: '3db15efd4462cbddeeb2',
-        apiSecret: '81cb93e99da565a57aca234048af75c4083a5e49274016e4bba47258abf0e3dc'
+        apiKey: 'XXX',
+        apiSecret: 'XXX'
     }
 };
 
